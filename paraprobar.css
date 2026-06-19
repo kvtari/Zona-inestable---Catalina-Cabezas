@@ -1,0 +1,5 @@
+#aguja-larga,
+#aguja-corta {
+    transform-box: fill-box;
+    transform-origin: center;
+}

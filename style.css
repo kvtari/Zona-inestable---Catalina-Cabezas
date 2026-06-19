@@ -1,0 +1,705 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* ================================= */
+/* GLOBAL Y RETÍCULA ARQUITECTÓNICA  */
+/* ================================= */
+body {
+    font-family: 'Rubik', sans-serif;
+    background-color: #FEFBF2;
+    /* Retícula muy sutil de fondo */
+    background-image: 
+        linear-gradient(rgba(140, 32, 65, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(140, 32, 65, 0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-position: center center;
+    color: #6B1831;
+    line-height: 1.6;
+}
+
+/* ================================= */
+/* HERO (PORTADA EDITORIAL)          */
+/* ================================= */
+.hero {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    overflow: hidden; 
+}
+
+/* El plano arquitectónico que aparece con el scroll */
+.hero-grid-bg {
+    position: absolute;
+    inset: 0;
+
+    background-image:
+        linear-gradient(rgba(140,32,65,.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(140,32,65,.08) 1px, transparent 1px);
+
+    background-size: 80px 80px;
+
+    opacity: 0;
+
+    transform-origin: center center;
+
+    z-index: 1;
+
+    pointer-events: none;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 1000px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Título Monumental */
+.hero h1.hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(10rem, 18vw, 18rem);
+    line-height: 0.85;
+    letter-spacing: 0.02em;
+    font-weight: normal;
+    margin-bottom: 40px;
+    color: #8C2041;
+}
+
+/* Estructura modular del título */
+.hero-title .word {
+    display: inline-flex;
+    overflow: visible;
+}
+
+.hero-title .letter {
+    display: inline-block;
+    /* Punto de anclaje inferior para simular peso estructural */
+    transform-origin: bottom center; 
+    will-change: transform;
+}
+
+/* Subtítulo Editorial */
+.hero-subtitle {
+    font-family: 'Rubik', sans-serif;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em; /* Tracking amplio y refinado */
+    text-align: center;
+    line-height: 2;
+    color: #6B1831;
+    margin-bottom: 50px;   
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Botón Minimalista */
+.hero-btn {
+    display: inline-block;
+    padding: 18px 45px;
+    background: transparent;
+    color: #8C2041;
+    border: 1px solid #8C2041;
+    border-radius: 0px; /* Bordes rectos y afilados */
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    font-family: 'Rubik', sans-serif;
+    text-transform: uppercase;
+}
+
+.hero-btn:hover {
+    transform: translateY(-4px);
+    background-color: #8C2041;
+    color: #FEFBF2;
+    box-shadow: 0 15px 25px rgba(140, 32, 65, 0.15); /* Sombra tensa */
+}
+
+
+/* ================================= */
+/* ESTRUCTURA INTERNA DE SECCIONES   */
+/* ================================= */
+.seccion-juego, .galeria, .contenedor-principal {
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 20px; 
+}
+
+.seccion-juego {
+    display: flex;         
+    align-items: center;   
+    justify-content: space-between; 
+    gap: 80px;          
+}
+
+.seccion-juego.inversa {
+    flex-direction: row-reverse;
+}
+
+.bloque-informacion {
+    flex: 1;          
+    text-align: left; 
+}
+
+.bloque-imagen {
+    flex: 1;          
+    display: flex;
+    justify-content: center;
+}
+
+.bloque-imagen img {
+    max-width: 100%;       
+    height: auto;
+    border-radius: 0px; /* Arquitectónico, sin bordes redondeados */
+    box-shadow: 15px 15px 0px rgba(140, 32, 65, 0.05); /* Sombra de offset constructiva */
+}
+
+.titulo-seccion, .galeria h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px; /* Títulos con más jerarquía */
+    text-align: left; 
+    color: #6B1831;
+    letter-spacing: 0.05em; 
+    text-transform: uppercase;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #F5BEBF; /* Viga base sutil */
+    padding-bottom: 10px;
+    display: inline-block;
+}
+
+.cuerpo-texto {
+    font-family: 'Rubik', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    line-height: 1.8;
+    color: #8C2041; 
+    text-align: justify; /* Look editorial */
+}
+
+/* ================================= */
+/* GALERÍA                           */
+/* ================================= */
+.grid {
+    display: grid;
+    /* Cambiamos de 4 a 3 columnas iguales */
+    grid-template-columns: repeat(3, 1fr); 
+    /* Aumenté un poco la separación (de 20px a 40px) para que respiren mejor al ser más grandes */
+    gap: 40px; 
+}
+
+.grid img {
+    width: 100%;
+    height: 200px;      
+    object-fit: cover;  
+    border-radius: 0px; /* Geométrico */
+    cursor: pointer;
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.grid img:hover {
+    transform: scale(1.05);
+}
+
+.lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.9);
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.lightbox img {
+    max-width: 90%;
+    max-height: 85%;
+    border-radius: 0px;
+}
+
+.cerrar {
+    position: absolute;
+    top: 20px;
+    right: 40px;
+    color: white;
+    font-size: 3rem;
+    cursor: pointer;
+}
+
+/* ================================= */
+/* CARRUSEL                          */
+/* ================================= */
+.carrusel-container {
+    overflow: hidden;
+    width: 100%;
+    position: relative; 
+}
+
+.carrusel-track {
+    display: flex;
+    transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1); 
+}
+
+.carrusel-track img {
+    min-width: 33.33%; 
+    height: 400px; 
+    padding: 10px;
+    transition: transform 0.4s ease; 
+    cursor: pointer; 
+    position: relative; 
+}
+
+.carrusel-track img:hover {
+    transform: scale(1.05); 
+    z-index: 5; 
+}
+
+.btn-carrusel {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #FEFBF2;
+    color: #8C2041;
+    border: 1px solid #8C2041;
+    width: 50px;
+    height: 50px;
+    border-radius: 0px; /* Geométrico */
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.btn-carrusel.prev { left: 40px; }
+.btn-carrusel.next { right: 40px; }
+
+.btn-carrusel:hover {
+    background-color: #8C2041;
+    color: #FEFBF2;
+}
+
+#foto1 { object-fit: contain; object-position: center; background-color: transparent; }
+#foto2 { object-fit: contain; background-color: transparent; }
+#foto3 { object-fit: contain; padding: 20px; background-color: transparent; }
+#foto4 { object-fit: cover; object-position: top; background-color: transparent; }
+#foto5 { object-fit: cover; background-color: transparent; }
+
+/* ================================= */
+/* MODOS DE JUEGO (TARJETAS)         */
+/* ================================= */
+.grid-modos {
+    display: flex;
+    gap: 40px;
+    justify-content: space-between;
+}
+
+.tarjeta-modo {
+    background-color: transparent; /* Aspecto editorial, sin cajas de color */
+    border-top: 2px solid #8C2041; /* Viga superior */
+    border-radius: 0px;
+    padding: 30px 0;
+    flex: 1;
+    box-shadow: none;
+    transition: transform 0.4s ease;
+}
+
+.tarjeta-modo:hover {
+    transform: translateY(-5px); /* Tensión de levantamiento sutil */
+}
+
+.tarjeta-modo h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    color: #8C2041;
+    font-size: 32px;
+    letter-spacing: 0.05em;
+    margin-bottom: 15px;
+}
+
+.tarjeta-modo p {
+    font-family: 'Rubik', sans-serif;
+    font-size: 15px;
+    color: #6B1831;
+    text-align: justify;
+    line-height: 1.6;
+}
+
+/* ================================================= */
+/* SECCIÓN CONCEPTUAL Y PORTAL (FONDO FRAMBUESA)     */
+/* ================================================= */
+.seccion-concepto {
+    background-color: #8C2041; 
+    padding: 80px 20px 100px 20px; 
+    width: 100%; 
+}
+
+.seccion-concepto .contenedor-principal {
+    margin-top: 0 !important; 
+    margin-bottom: 0 !important;
+}
+
+.titulo-concepto {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 64px;
+    color: #FEFBF2; 
+    letter-spacing: 0.08em;
+    text-align: center; 
+    margin-bottom: 60px; 
+}
+
+.dos-columnas-texto {
+    display: flex;
+    gap: 60px; 
+    justify-content: space-between;
+    align-items: center; 
+}
+
+.dos-columnas-texto .columna {
+    flex: 1; 
+    text-align: left;
+}
+
+.dos-columnas-texto p {
+    font-family: 'Rubik', sans-serif;
+    font-size: 1.1rem;
+    color: #FEFBF2; 
+    line-height: 1.8;
+    margin-bottom: 20px;
+    text-align: justify;
+}
+
+.dos-columnas-texto .destacado {
+    font-size: 28px;
+    font-weight: 700; 
+    line-height: 1.4;
+    text-align: left;
+}
+
+.concepto-fases {
+    display: flex;
+    max-width: 1000px;
+    margin: 80px auto 0 auto; 
+    gap: 60px;
+    justify-content: center;
+}
+
+.tarjeta-fase {
+    flex: 1;
+    padding: 30px 0;
+    border: none;
+    border-top: 2px solid #F5BEBF; /* Viga de contraste */
+    border-radius: 0px;
+    background-color: transparent; 
+    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1); 
+    text-align: left;
+}
+
+.tarjeta-fase h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 0.08em;
+    margin-bottom: 15px;
+    color: #FEFBF2; 
+}
+
+.tarjeta-fase p {
+    font-family: 'Rubik', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #FEFBF2; 
+    text-align: justify;
+}
+
+.tarjeta-fase.armado:hover,
+.tarjeta-fase.colapso:hover {
+    background-color: transparent; 
+    transform: translateY(-8px); 
+    border-color: #A6DDE5; /* Toque celeste sutil en la viga al pasar el mouse */
+    box-shadow: none; 
+}
+
+/* ================================= */
+/* PORTAL DE TRANSICIÓN FINAL        */
+/* ================================= */
+.portal-transicion {
+  height: 600vh; 
+  background-color: #8C2041; 
+  position: relative;
+  margin-top: 0; 
+  width: 100%;
+}
+
+.portal-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.portal-circulo-wrapper {
+  position: relative;
+  width: 350px; 
+  height: 350px;
+}
+
+.portal-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.portal-svg polygon {
+  fill: none;
+  stroke-width: 3; 
+  stroke-linejoin: round; 
+}
+
+.figura-fondo {
+  stroke: rgba(254, 251, 242, 0.15); 
+}
+
+.figura-progreso {
+  stroke: #FEFBF2; 
+  stroke-dasharray: 100; 
+  stroke-dashoffset: 100; 
+  filter: drop-shadow(0px 0px 8px rgba(254, 251, 242, 0.6)); 
+}
+
+.portal-enlace {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #FEFBF2; 
+  font-family: 'Rubik', sans-serif; 
+  font-size: 20px;
+  letter-spacing: 2px;
+  font-weight: bold;
+  opacity: 0; 
+  transform: scale(0.9);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+/* ================================= */
+/* MENÚ DE NAVEGACIÓN FLOTANTE       */
+/* ================================= */
+.franja-nav {
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 80px;
+    padding: 0 4vw; 
+    display: flex; 
+    justify-content: flex-end; 
+    align-items: center;
+    background: #FEFBF2; 
+    backdrop-filter: blur(5px);
+    border-bottom: 1px solid rgba(140, 32, 65, 0.1); 
+    z-index: 1000;
+    opacity: 0; 
+    transform: translateY(-20px); 
+    transition: all 0.5s ease;
+}
+
+.franja-nav.is-visible { 
+    opacity: 1; 
+    transform: translateY(0); 
+}
+
+.nav-list {
+    display: flex;
+    gap: 30px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-link {
+    text-decoration: none; 
+    color: #a89c9f; 
+    font-size: 0.85rem;
+    font-weight: bold; 
+    letter-spacing: 1px; 
+    text-transform: uppercase;
+    transition: color 0.3s ease;
+    font-family: 'Rubik', sans-serif;
+}
+
+.nav-link:hover { color: #8C2041; }
+.nav-link.active-nav { color: #8C2041; border-bottom: 2px solid #8C2041; padding-bottom: 5px; }
+
+/* ================================= */
+/* RESPONSIVE (MÓVILES)              */
+/* ================================= */
+@media(max-width: 768px) {
+    .hero h1.hero-title { font-size: 80px; }
+    .hero p.hero-subtitle { font-size: 0.9rem; letter-spacing: 0.1em; }
+    
+    .seccion-juego, .seccion-juego.inversa {
+        flex-direction: column;
+        text-align: center;
+        gap: 40px;
+    }
+    
+    .bloque-informacion, .cuerpo-texto, .titulo-seccion {
+        text-align: center; 
+    }
+    
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .grid-modos { flex-direction: column; }
+    
+    .dos-columnas-texto {
+        flex-direction: column;
+        gap: 30px;
+    }
+    .titulo-concepto {
+        font-size: 40px;
+    }
+
+    .concepto-fases {
+        flex-direction: column;
+    }
+}
+
+/* ================================================= */
+/* TABLERO DE CONTROL DE SALTOS (SCROLL-MARGIN)      */
+/* ================================================= */
+#que-es { scroll-margin-top: 140px; }
+#galeria { scroll-margin-top: 160px; }
+#preparacion { scroll-margin-top: 120px; }
+#tu-turno { scroll-margin-top: 130px; }
+#modos { scroll-margin-top: 150px; }
+#concepto { scroll-margin-top: 88px; }
+
+/* ================================= */
+/* TABLERO DE MÁRGENES INDIVIDUALES  */
+/* ================================= */
+#que-es {
+    margin-top: 250px;     
+    margin-bottom: 150px; 
+}
+
+#galeria {
+    margin-top: 150px;
+    margin-bottom: 150px;
+}
+
+#preparacion {
+    margin-top: 150px;
+    margin-bottom: 150px;
+}
+
+.carrusel-container {
+    margin-top: 150px;
+    margin-bottom: 150px;
+}
+
+#tu-turno {
+    margin-top: 150px;
+    margin-bottom: 150px;
+}
+
+#modos {
+    margin-top: 150px;
+    margin-bottom: 250px; 
+}
+
+.seccion-concepto {
+    margin-top: 150px; 
+    margin-bottom: 0px; 
+}
+
+
+.hero-title {
+    position: relative;
+    z-index: 5;
+}
+
+.hero-subtitle {
+    position: relative;
+    z-index: 5;
+}
+
+.hero-btn {
+    position: relative;
+    z-index: 5;
+}
+
+
+/* ================================================= */
+/* TENSIÓN ESTRUCTURAL (HERO)                        */
+/* ================================================= */
+.z-tension {
+    display: inline-block;
+    /* Movemos el centro de gravedad a la esquina inferior derecha. 
+       Esto simula que el pilar pivota y resiste desde su base */
+    transform-origin: bottom right; 
+    will-change: transform;
+}
+
+
+.inestable-tension {
+    display: inline-block;
+    /* Que la palabra pivote desde su esquina inferior derecha, igual que la Z */
+    transform-origin: bottom right; 
+    will-change: transform;
+}
+
+
+
+
+
+
+
+
+
+
+/* ================================= */
+/* CONTENEDOR 3D INTERACTIVO GALERÍA */
+/* ================================= */
+.item-3d {
+    width: 100%;
+    height: 200px; /* Misma altura que tus imágenes de la grid */
+    background-color: #FEFBF2; /* Fondo crema para integrarlo */
+    cursor: grab;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.item-3d:active {
+    cursor: grabbing; /* Cambia el cursor cuando haces click */
+}
+
+.item-3d canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    outline: none;
+}

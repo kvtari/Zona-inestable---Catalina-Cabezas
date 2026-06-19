@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landing - Zona Inestable</title>
+    
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+            }
+        }
+    </script>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="franja-nav" id="main-nav">
+        <ul class="nav-list">
+            <li><a href="#que-es" class="nav-link">Qué es</a></li>
+            <li><a href="#galeria" class="nav-link">Contenido</a></li>
+            <li><a href="#preparacion" class="nav-link">Preparación</a></li>
+            <li><a href="#tu-turno" class="nav-link">Tu Turno</a></li>
+            <li><a href="#modos" class="nav-link">Modos</a></li>
+            <li><a href="#concepto" class="nav-link">Concepto</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero" id="slide-hero">
+        <div class="hero-content">
+            <h1 class="hero-title" id="hero-title">
+                <span class="word">
+                    <span class="letter z-tension">Z</span><span class="letter">O</span><span class="letter">N</span><span class="letter">A</span>
+                </span>
+                <br>
+                <span class="word inestable-tension">
+                    <span class="letter">I</span><span class="letter">N</span><span class="letter">E</span><span class="letter">S</span><span class="letter">T</span><span class="letter">A</span><span class="letter">B</span><span class="letter">L</span><span class="letter">E</span>
+                </span>
+            </h1>
+            <p class="hero-subtitle">
+                Construye tu estructura y derriba las piezas rivales <br> sin provocar el colapso.
+            </p>
+            <a href="juego.html" class="btn hero-btn">IR A LA EXPERIENCIA INTERACTIVA</a>
+        </div>
+    </section>
+
+    <section class="seccion-juego scroll-section" id="que-es">
+        <div class="bloque-informacion">
+            <h2 class="titulo-seccion">¿En qué consiste el juego?</h2>
+            <p class="cuerpo-texto">
+                Zona Inestable es un juego de precisión y equilibrio en el que los jugadores construyen una estructura y compiten por derribar las piezas rivales usando una caña extensible, evitando que sus propias piezas caigan o que la estructura colapse. <br>
+            </p>
+        </div>
+        <div class="bloque-imagen">
+            <img src="assets/enqueconsisteeljuego.gif" alt="en que consiste el juego">
+        </div>
+    </section>
+
+<section id="galeria" class="galeria scroll-section">
+    <h2>CONTENIDO DEL JUEGO</h2>
+    <div class="grid">
+        <div id="contenedor-plataforma-3d" class="item-3d"></div>
+        <div id="contenedor-pilar-3d" class="item-3d"></div>
+        <div id="contenedor-base-3d" class="item-3d"></div>
+        
+        <img src="assets/ruleta.png" alt="Ruleta (Próximamente)">
+        <img src="assets/canas.png" alt="Cañas (Próximamente)">
+        <div id="contenedor-conjunto-piezas-3d" class="item-3d"></div>
+    </div>
+</section>
+
+    <div class="lightbox" id="lightbox">
+        <span class="cerrar">&times;</span>
+        <img id="imagen-ampliada" src="" alt="">
+    </div>
+
+    <section class="seccion-juego inversa scroll-section" id="preparacion">
+        <div class="bloque-informacion">
+            <h2 class="titulo-seccion">PREPARACIÓN</h2>
+            <p class="cuerpo-texto">
+               
+        </div>
+        <div class="bloque-imagen">
+            <img src="assets/armado.gif" alt="armado">
+        </div>
+    </section>
+
+    <div class="carrusel-container">
+        <div class="carrusel-track" id="track">
+            <img src="assets/torre editable 1.png" id="foto1" alt="torre 1.png">
+            <img src="assets/torre editable 2.png" id="foto2" alt="torre 2.png">
+            <img src="assets/torre editable 3.png" id="foto3" alt="torre 3.png">
+            <img src="assets/torre editable 4.png" id="foto4" alt="torre 4.png">
+            <img src="assets/torre editable 5.png" id="foto5" alt="torre 5.png">
+        </div>
+        <button class="btn-carrusel prev" onclick="mover(-1)">&#10094;</button>
+        <button class="btn-carrusel next" onclick="mover(1)">&#10095;</button>
+    </div>
+
+    
+        <div style="flex: 1; display: flex; justify-content: center;">
+            <img src="tu-imagen.jpg" alt="Tú Turno Zona Inestable" style="max-width: 100%; height: auto; border-radius: 10px;">
+        </div>
+    </section>
+
+    <section class="contenedor-principal scroll-section" id="modos">
+        <h1 class="titulo-seccion">MODOS DE JUEGO Y FIN DE LA PARTIDA</h1>
+        <div class="grid-modos">
+            <article class="tarjeta-modo">
+                <h2>DESCALIFICACIÓN</h2>
+                <p>Cuando un jugador derriba una torre, este pierde todos sus puntos y es descalificado de la partida. Si quedan plataformas en pie, el resto de jugadores continúan jugando normalmente con las plataformas restantes. Gana el jugador con más puntos, sumando las piezas normales y las especiales, y restando las piezas del color propio.</p>
+            </article>
+
+            <article class="tarjeta-modo">
+                <h2>FANTASMA</h2>
+                <p>Cuando un jugador derriba una torre, este pierde todos sus puntos y queda como fantasma el resto de la partida, pudiendo mover las plataformas de ubicación cada vez que sea su turno. No podrá ganar la partida, pero si entorpecer la de los jugadores restantes.</p>
+            </article>
+
+            <article class="tarjeta-modo">
+                <h2>VERSUS</h2>
+                <p>2 jugadores utilizan ambas cañas y juegan a la vez, intentando botar la mayor cantidad de piezas en menos de 6 minutos. Se intercambian las cañas cada 1 minuto y el juego termina cuando uno de los jugadores bota la torre (en ese caso pierde) o cuando todas las piezas sean derribadas, ganando el jugador con mayor puntaje.</p>
+            </article>
+        </div>
+    </section>
+
+    <section class="seccion-concepto scroll-section" id="concepto">
+        <div class="contenedor-principal">
+            <h2 class="titulo-concepto">LA PROGRESIÓN DE LA FRAGILIDAD</h2>
+            <div class="dos-columnas-texto">
+                <div class="columna">
+                    <p class="destacado">Zona Inestable se define por un ciclo de tensión física entre el proceso controlado de construcción (armado) y la inevitable posibilidad del colapso.</p>
+                </div>
+                <div class="columna">
+                    <p>La propuesta abstrae la tensión creciente que precede al colapso presente en el juego. Al ser una lucha constante contra la gravedad, se busca traducir esa sensación de cómo la estabilidad de una estructura cambia con el tiempo a medida que es intervenida, generando una sensación creciente de tensión e incertidumbre sobre su posible colapso.</p>
+                    <p>A medida que el usuario navega, la interfaz evidencia cómo un sistema pierde estabilidad al ser intervenido. En lugar de presentar una estructura sólida e inmutable, el diseño expone su vulnerabilidad y hace visible el impacto de cada acción realizada por el usuario.</p>
+                </div>
+            </div>
+
+            <div class="concepto-fases">
+                <div class="tarjeta-fase armado">
+                    <h3>ARMADO</h3>
+                    <p>Se manifiesta mediante interacciones que exigen precisión y control, evocando el proceso de construcción de la torre.</p>
+                </div>
+                <div class="tarjeta-fase colapso">
+                    <h3>COLAPSO</h3>
+                    <p>Constituye el eje central de la experiencia. A través de diversas interacciones, la estructura reacciona a la acción del usuario generando sensaciones de caos, pérdida de control y desequilibrio. De esta manera, la interfaz no solo representa el juego, sino que adopta su misma lógica de funcionamiento.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="portal-transicion">
+      <div class="portal-sticky">
+        <div class="portal-circulo-wrapper">
+          
+          <svg class="portal-svg" viewBox="0 0 100 100">
+            <polygon class="figura-fondo" points="50,5 89,28 89,72 50,95 11,72 11,28"></polygon>
+            <polygon class="figura-progreso" pathLength="100" points="50,5 89,28 89,72 50,95 11,72 11,28"></polygon>
+          </svg>
+
+          <div id="boton-portal" class="portal-enlace">
+            <span class="texto-entrar">EXPERIENCIA<br>INTERACTIVA</span>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="script.js"></script>
+    
+    <script type="module" src="plataforma3d.js"></script>
+    <script type="module" src="pilar3d.js"></script> 
+    <script type="module" src="base3d.js"></script> <script type="module" src="conjuntopiezas3d.js"></script>
+    
+</body>
+</html>
