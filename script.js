@@ -38,7 +38,7 @@ function mover(direccion) {
 }
 
 // ===================================
-// LÓGICA DEL MENÚ DE NAVEGACIÓN
+// LÓGICA DEL MENÚ DE NAVEGACIÓN Y HOVER DE FUNDAMENTOS
 // ===================================
 document.addEventListener("DOMContentLoaded", function () {
     const sections = document.querySelectorAll(".scroll-section");
@@ -74,18 +74,36 @@ document.addEventListener("DOMContentLoaded", function () {
         
         sections.forEach(sec => navObserver.observe(sec));
     }
+
+    // INTERACCIÓN DE PLACEHOLDERS (Sección Fundamento)
+    const placeholders = document.querySelectorAll('.placeholder');
+    placeholders.forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            const randomRot = (Math.random() * 2 - 1).toFixed(2);
+            const randomX = (Math.random() * 4 - 2).toFixed(2);   
+            const randomY = (Math.random() * 4 - 2).toFixed(2);   
+            
+            el.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRot}deg)`;
+            el.style.backgroundColor = 'rgba(254, 251, 242, 0.15)';
+            el.style.color = '#FEFBF2';
+        });
+
+        el.addEventListener('mouseleave', () => {
+            el.style.transform = 'translate(0px, 0px) rotate(0deg)';
+            el.style.backgroundColor = 'rgba(254, 251, 242, 0.05)';
+            el.style.color = 'rgba(254, 251, 242, 0.6)';
+        });
+    });
 });
 
 // =================================================
 // ESTRUCTURA INESTABLE HERO: FÍSICA Y TENSIÓN
 // =================================================
-
 document.addEventListener("DOMContentLoaded", () => {
-
     const hero = document.querySelector(".hero");
     const grid = document.querySelector(".hero-grid-bg");
     const zLetter = document.querySelector(".z-tension");
-    const inestableWord = document.querySelector(".inestable-tension"); // ¡Nueva variable atrapando la palabra!
+    const inestableWord = document.querySelector(".inestable-tension"); 
 
     if (!hero || !zLetter || typeof gsap === "undefined") return;
 
@@ -106,7 +124,6 @@ document.addEventListener("DOMContentLoaded", () => {
         tlHero.to(grid, { opacity: 1, duration: 0.1 }, 0);
     }
 
-    // ETAPA 1 y 2: ¡La Z y la palabra INESTABLE reciben la fuerza del scroll a la vez!
     tlHero.to([zLetter, inestableWord], {
         rotation: 3.5,       
         skewX: -2,           
@@ -115,7 +132,6 @@ document.addEventListener("DOMContentLoaded", () => {
         duration: 0.6        
     }, 0);
 
-    // ETAPA 3: Liberación y Deformación Residual para ambas
     tlHero.to([zLetter, inestableWord], {
         rotation: 1.5,       
         skewX: 0,            
@@ -123,7 +139,6 @@ document.addEventListener("DOMContentLoaded", () => {
         ease: "power1.out",
         duration: 0.4        
     }, 0.6);
-
 });
 
 // ==========================================
@@ -163,4 +178,3 @@ window.addEventListener("load", () => {
         });
     }
 });
-

@@ -58,18 +58,18 @@
         </div>
     </section>
 
-<section id="galeria" class="galeria scroll-section">
-    <h2>CONTENIDO DEL JUEGO</h2>
-    <div class="grid">
-        <div id="contenedor-plataforma-3d" class="item-3d"></div>
-        <div id="contenedor-pilar-3d" class="item-3d"></div>
-        <div id="contenedor-base-3d" class="item-3d"></div>
-        
-        <img src="assets/ruleta.png" alt="Ruleta (Próximamente)">
-        <img src="assets/canas.png" alt="Cañas (Próximamente)">
-        <div id="contenedor-conjunto-piezas-3d" class="item-3d"></div>
-    </div>
-</section>
+    <section id="galeria" class="galeria scroll-section">
+        <h2>CONTENIDO DEL JUEGO</h2>
+        <div class="grid">
+            <div id="contenedor-plataforma-3d" class="item-3d"></div>
+            <div id="contenedor-pilar-3d" class="item-3d"></div>
+            <div id="contenedor-base-3d" class="item-3d"></div>
+            
+            <img src="assets/ruleta.png" alt="Ruleta (Próximamente)">
+            <img src="assets/canas.png" alt="Cañas (Próximamente)">
+            <div id="contenedor-conjunto-piezas-3d" class="item-3d"></div>
+        </div>
+    </section>
 
     <div class="lightbox" id="lightbox">
         <span class="cerrar">&times;</span>
@@ -79,8 +79,7 @@
     <section class="seccion-juego inversa scroll-section" id="preparacion">
         <div class="bloque-informacion">
             <h2 class="titulo-seccion">PREPARACIÓN</h2>
-            <p class="cuerpo-texto">
-               
+            <p class="cuerpo-texto"></p>
         </div>
         <div class="bloque-imagen">
             <img src="assets/armado.gif" alt="armado">
@@ -99,7 +98,7 @@
         <button class="btn-carrusel next" onclick="mover(1)">&#10095;</button>
     </div>
 
-    
+    <section class="seccion-juego scroll-section" id="tu-turno">
         <div style="flex: 1; display: flex; justify-content: center;">
             <img src="tu-imagen.jpg" alt="Tú Turno Zona Inestable" style="max-width: 100%; height: auto; border-radius: 10px;">
         </div>
@@ -125,29 +124,86 @@
         </div>
     </section>
 
-    <section class="seccion-concepto scroll-section" id="concepto">
+    <section class="seccion-fundamento scroll-section" id="concepto">
         <div class="contenedor-principal">
-            <h2 class="titulo-concepto">LA PROGRESIÓN DE LA FRAGILIDAD</h2>
-            <div class="dos-columnas-texto">
-                <div class="columna">
-                    <p class="destacado">Zona Inestable se define por un ciclo de tensión física entre el proceso controlado de construcción (armado) y la inevitable posibilidad del colapso.</p>
+            
+            <div class="fundamento-intro">
+                <div class="fundamento-text">
+                    <h1>FUNDAMENTO<br>LA ALEATORIEDAD<br>COMO CONDICIÓN</h1>
+                    <p>EL FENÓMENO QUE ORIGINA LA EXPERIENCIA</p>
                 </div>
-                <div class="columna">
-                    <p>La propuesta abstrae la tensión creciente que precede al colapso presente en el juego. Al ser una lucha constante contra la gravedad, se busca traducir esa sensación de cómo la estabilidad de una estructura cambia con el tiempo a medida que es intervenida, generando una sensación creciente de tensión e incertidumbre sobre su posible colapso.</p>
-                    <p>A medida que el usuario navega, la interfaz evidencia cómo un sistema pierde estabilidad al ser intervenido. En lugar de presentar una estructura sólida e inmutable, el diseño expone su vulnerabilidad y hace visible el impacto de cada acción realizada por el usuario.</p>
+                <div class="fundamento-image">
+                    <div class="placeholder circle-placeholder">Ruleta (Imagen aquí)</div>
                 </div>
             </div>
 
-            <div class="concepto-fases">
-                <div class="tarjeta-fase armado">
-                    <h3>ARMADO</h3>
-                    <p>Se manifiesta mediante interacciones que exigen precisión y control, evocando el proceso de construcción de la torre.</p>
-                </div>
-                <div class="tarjeta-fase colapso">
-                    <h3>COLAPSO</h3>
-                    <p>Constituye el eje central de la experiencia. A través de diversas interacciones, la estructura reacciona a la acción del usuario generando sensaciones de caos, pérdida de control y desequilibrio. De esta manera, la interfaz no solo representa el juego, sino que adopta su misma lógica de funcionamiento.</p>
+            <div class="timeline-section">
+                <article class="timeline-item">
+                    <div class="timeline-icon">
+                        <div class="circle-icon">1</div>
+                        <div class="vertical-line"></div>
+                    </div>
+                    <div class="timeline-content">
+                        <h2>1. LA ALEATORIEDAD COMO CONDICIÓN</h2>
+                        <p>En Zona Inestable se reconoce la presencia de una condición aleatoria que actúa sobre el desarrollo de la experiencia. La ruleta introduce dinamismo en las posibilidades existentes obligando a enfrentar continuamente nuevas condiciones ya establecidas al usuario.</p>
+                        <p>La aleatoriedad no se manifiesta como una interrupción, sino como una condición permanente del sistema.</p>
+                    </div>
+                    <div class="timeline-image">
+                        <div class="placeholder rect-placeholder">Imagen Bloques aquí</div>
+                    </div>
+                </article>
+
+                <article class="timeline-item">
+                    <div class="timeline-icon">
+                        <div class="circle-icon">2</div>
+                        <div class="vertical-line"></div>
+                    </div>
+                    <div class="timeline-content">
+                        <h2>2. AISLAR PARA HACER VISIBLE</h2>
+                        <p>A partir de esta observación, la experiencia digital busca aislar esta condición presente en el juego físico para hacerla visible por sí misma. Más que reproducir una mecánica específica, explora la aparición de una fuerza externa capaz de intervenir sobre un sistema y transformar continuamente sus posibilidades.</p>
+                    </div>
+                    <div class="timeline-image">
+                        <div class="placeholder rect-placeholder">Imagen Isométrica aquí</div>
+                    </div>
+                </article>
+
+                <article class="timeline-item">
+                    <div class="timeline-icon">
+                        <div class="circle-icon">3</div>
+                        <div class="vertical-line"></div>
+                    </div>
+                    <div class="timeline-content">
+                        <h2>3. LA TRANSFORMACIÓN DEL ESPACIO</h2>
+                        <p>La página se presenta inicialmente como una superficie aparentemente estable, donde cada pieza ocupa una posición dentro de un orden reconocible. Sin embargo, la aparición de una condición aleatoria modifica este escenario, alterando la continuidad del espacio y generando nuevas configuraciones.</p>
+                        <p>Los vacíos que emergen no corresponden únicamente a una pérdida, sino a la manifestación visible de una decisión que surge desde fuera del control del usuario.</p>
+                    </div>
+                    <div class="timeline-image">
+                        <div class="placeholder rect-placeholder">Imagen Vacíos aquí</div>
+                    </div>
+                </article>
+
+                <article class="timeline-item">
+                    <div class="timeline-icon">
+                        <div class="circle-icon">~</div> 
+                        <div class="vertical-line"></div>
+                    </div>
+                    <div class="timeline-content">
+                        <h2>4. UN ESTADO EN TRANSFORMACIÓN CONSTANTE</h2>
+                        <p>Entre aquello que permanece y aquello que desaparece se revela una tensión constante. La experiencia ocurre en ese estado intermedio, donde ninguna condición se presenta como definitiva y donde cada nueva intervención tiene la capacidad de transformar el escenario existente.</p>
+                    </div>
+                    <div class="timeline-image">
+                        <div class="placeholder rect-placeholder">Imagen Transformación aquí</div>
+                    </div>
+                </article>
+            </div>
+
+            <div class="bottom-banner">
+                <div class="banner-icon">✲</div>
+                <div class="banner-text">
+                    ZONA INESTABLE EXPLORA LA APARICIÓN DE UNA FUERZA EXTERNA QUE INTERVIENE SOBRE UN SISTEMA Y TRANSFORMA CONTINUAMENTE SUS POSIBILIDADES.
                 </div>
             </div>
+
         </div>
     </section>
 
@@ -168,13 +224,14 @@
       </div>
     </section>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="script.js"></script>
     
     <script type="module" src="plataforma3d.js"></script>
     <script type="module" src="pilar3d.js"></script> 
-    <script type="module" src="base3d.js"></script> <script type="module" src="conjuntopiezas3d.js"></script>
+    <script type="module" src="base3d.js"></script> 
+    <script type="module" src="conjuntopiezas3d.js"></script>
     
 </body>
 </html>
