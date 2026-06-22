@@ -1,72 +1,57 @@
-body {
+* {
     margin: 0;
     padding: 0;
-    background-color: #8C2041; 
-    overflow-x: hidden;
-    scrollbar-width: thin; 
-    scrollbar-color: #A6DDE5 #8C2041; 
+    box-sizing: border-box;
 }
 
-body.bloqueado {
-    height: 100vh !important;
-    overflow: hidden !important; 
+body {
+    background-color: #0a0a0a;
+    color: #ffffff;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    overflow: hidden;
 }
 
-.scroll-spacer {
-    height: 400vh; 
-    pointer-events: none; 
-}
-
-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1;
-    cursor: grab; 
-}
-
-canvas:active {
-    cursor: grabbing;
-}
-
-#ui-layer {
-    position: fixed;
-    top: 8%; 
-    width: 100%;
-    z-index: 10; 
+.interfaz {
     text-align: center;
-    pointer-events: none; 
+    margin-bottom: 20px;
+    z-index: 10;
 }
 
-#titulo-estado {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 2.5rem;
-    font-weight: 800;
-    letter-spacing: 0.15em; 
-    margin: 0;
-    color: #FEFBF2; 
-    opacity: 0.2; 
+h1 {
+    font-size: 24px;
+    letter-spacing: 2px;
     text-transform: uppercase;
+    font-weight: 300;
 }
 
-/* =======================================================
-   LA BARRA DE SCROLL LATERAL (TUBO DE NEÓN ESTABLE)
-   ======================================================= */
-::-webkit-scrollbar {
-    width: 16px; 
+p {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 20px;
 }
 
-::-webkit-scrollbar-track {
-    background-color: #8C2041; 
+button {
+    background-color: transparent;
+    color: #fff;
+    border: 1px solid #fff;
+    padding: 10px 20px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-::-webkit-scrollbar-thumb {
-    /* Gradiente que simula luz de neón */
-    background: linear-gradient(90deg, #A6DDE5 0%, #ffffff 50%, #A6DDE5 100%);
-    border-radius: 10px; 
-    border: 3px solid #8C2041; /* Margen seguro para que no desaparezca */
+button:hover {
+    background-color: #fff;
+    color: #000;
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(90deg, #F5BEBF 0%, #ffffff 50%, #F5BEBF 100%);
+#canvas-container {
+    border: 1px solid #333;
 }

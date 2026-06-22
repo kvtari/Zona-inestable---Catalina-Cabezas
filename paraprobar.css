@@ -1,5 +1,184 @@
-#aguja-larga,
-#aguja-corta {
-    transform-box: fill-box;
-    transform-origin: center;
+/* paraprobar.css */
+
+/* --- Variables y Reset --- */
+:root {
+    --bg-color: #ba0c47; /* Color magenta oscuro del fondo */
+    --text-main: #ffffff;
+    --text-muted: #fca5bc;
+    --line-color: rgba(255, 255, 255, 0.3);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    padding: 2rem 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* --- Navegación --- */
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4rem;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+.top-nav nav a {
+    color: var(--text-main);
+    text-decoration: none;
+    margin-left: 2rem;
+    font-weight: 500;
+}
+
+/* --- Sección Hero --- */
+.hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5rem;
+}
+
+.hero-text h1 {
+    font-size: 4.5rem;
+    font-weight: 900;
+    line-height: 0.9;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+}
+
+.hero-text p {
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    color: var(--text-main);
+}
+
+/* --- Timeline (Grilla de 3 Columnas) --- */
+.timeline-section {
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+    margin-bottom: 4rem;
+}
+
+.timeline-item {
+    display: grid;
+    grid-template-columns: 80px 1fr 400px;
+    gap: 3rem;
+}
+
+/* --- Iconos y Línea Vertical --- */
+.timeline-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.circle-icon {
+    width: 60px;
+    height: 60px;
+    border: 2px solid var(--line-color);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    background-color: var(--bg-color);
+    z-index: 2;
+}
+
+.vertical-line {
+    width: 2px;
+    height: 100%; /* La línea se extiende hasta conectar con el siguiente ítem */
+    background-color: var(--line-color);
+    position: absolute;
+    top: 60px; 
+    z-index: 1;
+}
+
+.timeline-item:last-child .vertical-line {
+    display: none;
+}
+
+/* --- Contenido de Texto --- */
+.timeline-content h2 {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+}
+
+.timeline-content p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* --- Placeholders de Imágenes --- */
+.placeholder {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px dashed var(--line-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--line-color);
+    font-size: 0.9rem;
+    text-align: center;
+    cursor: crosshair; /* Cambiamos el cursor para dar pista de interactividad */
+}
+
+.circle-placeholder {
+    width: 450px;
+    height: 450px;
+    border-radius: 50%;
+}
+
+.rect-placeholder {
+    width: 100%;
+    height: 220px;
+    border-radius: 8px;
+}
+
+/* --- Banner Inferior --- */
+.bottom-banner {
+    border: 1px solid var(--line-color);
+    border-radius: 8px;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.banner-icon {
+    font-size: 3rem;
+    line-height: 1;
+}
+
+.banner-text {
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    line-height: 1.5;
+}
+
+/* --- Footer --- */
+footer {
+    text-align: center;
+    letter-spacing: 2px;
+    padding-bottom: 2rem;
+}
+
+.arrow-down {
+    font-size: 1.5rem;
+    margin-top: 0.5rem;
 }

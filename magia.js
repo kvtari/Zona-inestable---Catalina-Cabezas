@@ -1,328 +1,457 @@
-gsap.registerPlugin(ScrollTrigger);
-const { Engine, Render, Runner, Bodies, Composite, Events, Body, Mouse, MouseConstraint, Constraint, Vector } = Matter;
+// ==========================================
+// 1. MOTOR DEL CIELO (Nubes Volumétricas)
+// ==========================================
+const skyCanvasNode = document.getElementById('skyCanvas');
+if (skyCanvasNode) {
+    const skyCtx = skyCanvasNode.getContext('2d', { alpha: false }); 
+    
+    let skyW, skyH;
+    let cloudsArr = [];
+    let paperTex;
+    let lastSkyTime = 0;
 
+    function generatePaperTexture() {
+        const size = 256;
+        const texCanvas = document.createElement('canvas');
+        texCanvas.width = size; texCanvas.height = size;
+        const tCtx = texCanvas.getContext('2d');
+        const imgData = tCtx.createImageData(size, size);
+        
+        for (let i = 0; i < imgData.data.length; i += 4) {
+            const val = 150 + Math.random() * 105; 
+            imgData.data[i] = val;
+            imgData.data[i+1] = val;
+            imgData.data[i+2] = val;
+            imgData.data[i+3] = 2 + Math.random() * 3; 
+        }
+        tCtx.putImageData(imgData, 0, 0);
+        return texCanvas;
+    }
+
+    function drawSoftPuff(context, x, y, radius, maxOpacity) {
+        const grad = context.createRadialGradient(x, y, 0, x, y, radius);
+        grad.addColorStop(0, `rgba(255, 255, 255, ${maxOpacity})`);
+        grad.addColorStop(0.3, `rgba(255, 255, 255, ${maxOpacity * 0.8})`);
+        grad.addColorStop(0.7, `rgba(255, 255, 255, ${maxOpacity * 0.3})`);
+        grad.addColorStop(1, `rgba(255, 255, 255, 0)`);
+        
+        context.fillStyle = grad;
+        context.beginPath();
+        context.arc(x, y, radius, 0, Math.PI * 2);
+        context.fill();
+    }
+
+    function generateCloudStamp(cloudWidth) {
+        const cloudHeight = cloudWidth * 0.55; 
+        const stampCanvas = document.createElement('canvas');
+        stampCanvas.width = cloudWidth;
+        stampCanvas.height = cloudHeight;
+        const sCtx = stampCanvas.getContext('2d');
+
+        const centerX = cloudWidth / 2;
+        const centerY = cloudHeight / 2;
+
+        for(let i = 0; i < 40; i++) {
+            const offsetX = (Math.random() - 0.5) * (cloudWidth * 0.7);
+            const offsetY = (Math.random() - 0.5) * (cloudHeight * 0.4);
+            const distRatioX = 1 - (Math.abs(offsetX) / (cloudWidth / 2));
+            const radius = (cloudHeight * 0.15) + (Math.random() * cloudHeight * 0.25) * distRatioX;
+            const opacity = 0.05 + Math.random() * 0.2; 
+            drawSoftPuff(sCtx, centerX + offsetX, centerY + offsetY, radius, opacity);
+        }
+
+        for(let i = 0; i < 15; i++) {
+            const offsetX = (Math.random() - 0.5) * (cloudWidth * 0.25);
+            const offsetY = (Math.random() - 0.5) * (cloudHeight * 0.15);
+            const radius = (cloudHeight * 0.15) + (Math.random() * cloudHeight * 0.2);
+            const opacity = 0.5 + Math.random() * 0.5; 
+            drawSoftPuff(sCtx, centerX + offsetX, centerY + offsetY, radius, opacity);
+        }
+
+        for(let i = 0; i < 8; i++) {
+            const offsetX = (Math.random() - 0.5) * (cloudWidth * 0.85);
+            const offsetY = (Math.random() - 0.5) * (cloudHeight * 0.6);
+            const radius = cloudHeight * 0.05 + Math.random() * cloudHeight * 0.08;
+            const opacity = 0.1 + Math.random() * 0.3;
+            drawSoftPuff(sCtx, centerX + offsetX, centerY + offsetY, radius, opacity);
+        }
+        return stampCanvas;
+    }
+
+    const cloudStamps = { deep: [], mid: [], top: [] };
+
+    function initAssets() {
+        paperTex = generatePaperTexture();
+        for(let i=0; i<4; i++) cloudStamps.deep.push(generateCloudStamp(300));
+        for(let i=0; i<4; i++) cloudStamps.mid.push(generateCloudStamp(500));
+        for(let i=0; i<4; i++) cloudStamps.top.push(generateCloudStamp(800));
+    }
+
+    class Cloud {
+        constructor(layerType) {
+            this.layerType = layerType;
+            this.reset(true);
+        }
+
+        reset(randomizePosition = false) {
+            let stamps, speedMultiplier, baseOpacity;
+            
+            if (this.layerType === 'deep') {
+                stamps = cloudStamps.deep; speedMultiplier = 0.2; baseOpacity = 0.35; 
+            } else if (this.layerType === 'mid') {
+                stamps = cloudStamps.mid; speedMultiplier = 0.5; baseOpacity = 0.65;
+            } else {
+                stamps = cloudStamps.top; speedMultiplier = 0.9; baseOpacity = 1.0; 
+            }
+
+            this.stamp = stamps[Math.floor(Math.random() * stamps.length)];
+            this.width = this.stamp.width;
+            this.height = this.stamp.height;
+            this.baseOpacity = baseOpacity;
+            
+            if (randomizePosition) {
+                this.x = Math.random() * (skyW + this.width * 2) - this.width;
+                this.y = Math.random() * (skyH + this.height * 2) - this.height;
+            } else {
+                if (Math.random() > 0.5) {
+                    this.x = Math.random() * skyW;
+                    this.y = skyH + this.height;
+                } else {
+                    this.x = skyW + this.width;
+                    this.y = Math.random() * skyH;
+                }
+            }
+
+            const baseWind = 25; 
+            this.vx = (-baseWind * 0.8 - Math.random() * 10) * speedMultiplier;
+            this.vy = (-baseWind * 0.4 - Math.random() * 5) * speedMultiplier; 
+        }
+
+        update(dt) {
+            this.x += this.vx * dt;
+            this.y += this.vy * dt;
+            if (this.x < -this.width || this.y < -this.height) {
+                this.reset(false);
+            }
+        }
+
+        draw(ctx) {
+            ctx.globalAlpha = this.baseOpacity;
+            ctx.drawImage(this.stamp, this.x, this.y, this.width, this.height);
+            ctx.globalAlpha = 1.0;
+        }
+    }
+
+    function resizeSky() {
+        skyW = skyCanvasNode.width = window.innerWidth;
+        skyH = skyCanvasNode.height = window.innerHeight;
+        cloudsArr = [];
+        const area = skyW * skyH;
+        const densityBase = 1920 * 1080;
+        const ratio = Math.max(0.5, area / densityBase);
+
+        for(let i=0; i<15 * ratio; i++) cloudsArr.push(new Cloud('deep'));
+        for(let i=0; i<12 * ratio; i++) cloudsArr.push(new Cloud('mid'));
+        for(let i=0; i<8 * ratio; i++) cloudsArr.push(new Cloud('top'));
+    }
+
+    function renderSky(time) {
+        const dt = Math.min((time - lastSkyTime) / 1000, 0.1); 
+        lastSkyTime = time;
+
+        skyCtx.fillStyle = '#C5E0E9';
+        skyCtx.fillRect(0, 0, skyW, skyH);
+
+        const sortedClouds = [...cloudsArr].sort((a, b) => {
+            const order = { 'deep': 1, 'mid': 2, 'top': 3 };
+            return order[a.layerType] - order[b.layerType];
+        });
+
+        for (let cloud of sortedClouds) {
+            cloud.update(dt); 
+            cloud.draw(skyCtx);
+        }
+
+        skyCtx.globalCompositeOperation = 'overlay';
+        for (let x = 0; x < skyW; x += paperTex.width) {
+            for (let y = 0; y < skyH; y += paperTex.height) {
+                skyCtx.drawImage(paperTex, x, y);
+            }
+        }
+        skyCtx.globalCompositeOperation = 'source-over';
+
+        requestAnimationFrame(renderSky);
+    }
+
+    window.addEventListener('resize', resizeSky);
+    initAssets();
+    resizeSky();
+    requestAnimationFrame((t) => {
+        lastSkyTime = t;
+        renderSky(t);
+    });
+}
+
+
+// ==========================================
+// 2. CONFIGURACIÓN DEL JUEGO Y FÍSICAS
+// ==========================================
+const { Engine, Render, Runner, Bodies, Composite, Body, Events, Vertices } = Matter;
 const engine = Engine.create();
 const world = engine.world;
 
+engine.gravity.y = 0; 
+engine.gravity.x = 0;
+
 const render = Render.create({
-    element: document.getElementById('escenario-interactivo'),
+    element: document.getElementById('canvas-container'),
     engine: engine,
-    options: {
-        width: window.innerWidth,
-        height: window.innerHeight,
-        wireframes: false,
-        background: '#8C2041' 
+    options: { 
+        width: 800,   
+        height: 600,  
+        wireframes: false, 
+        background: 'transparent' 
     }
 });
+
+let casillas = []; 
+let playerPieces = []; 
+let cuerposTemblando = []; 
+let cuerposCayendo = []; 
+let turnoActual = 0;
+const maxTurnos = 10;
+let estado = 'COLOCAR'; 
+let rotacionAcumulada = 0; 
+
+const uiInstrucciones = document.getElementById('instrucciones');
+const btnAzar = document.getElementById('trigger');
+const canvasContainer = document.getElementById('canvas-container');
+const ruletaOverlay = document.getElementById('ruleta-overlay');
+const ruletaInner = document.getElementById('ruleta-inner');
+
+// CONSTRUCTOR DE LA RULETA
+function crearRuletaVectorial() {
+    let svgHTML = `
+    <svg viewBox="-55 -55 110 110" id="ruleta-grafica" style="width: 100%; height: 100%; transition: transform 3s cubic-bezier(0.2, 0.8, 0.1, 1); border-radius: 50%;">
+        <circle cx="0" cy="0" r="53" fill="#BDD4DA" stroke="#8C2041" stroke-width="0.3"/>
+        <circle cx="0" cy="0" r="45" fill="none" stroke="#8C2041" stroke-width="0.5"/>
+    `;
+
+    const datos = [
+        { valor: 1, color: '#F4EFE6', textColor: '#8C2041' }, 
+        { valor: 2, color: '#EAA8A9', textColor: '#8C2041' }, 
+        { valor: 1, color: '#F4EFE6', textColor: '#8C2041' }, 
+        { valor: 2, color: '#EAA8A9', textColor: '#8C2041' }, 
+        { valor: 1, color: '#F4EFE6', textColor: '#8C2041' }, 
+        { valor: 3, color: '#8C2041', textColor: '#F4EFE6' }  
+    ];
+
+    datos.forEach((d, i) => {
+        svgHTML += `
+        <g transform="rotate(${i * 60})">
+            <path d="M 0 0 L -22.5 -38.97 A 45 45 0 0 1 22.5 -38.97 Z" fill="${d.color}" stroke="#8C2041" stroke-width="0.3"/>
+            <text x="0" y="-26" text-anchor="middle" dominant-baseline="central" fill="${d.textColor}" font-size="16" font-family="'Bebas Neue', sans-serif" letter-spacing="1">${d.valor}</text>
+        </g>
+        `;
+    });
+
+    svgHTML += `</svg>`;
+    
+    if(ruletaInner) {
+        ruletaInner.innerHTML = svgHTML;
+    }
+}
+
+crearRuletaVectorial();
+
+// LA GEOMETRÍA: Matriz Entrelazada
+const cols = 8;
+const rows = 4;
+const w = 55;  
+const h = 95;  
+const gap = 3; 
+
+const startX = 400 - (cols * w) / 2 + w / 2;
+const startY = 320 - (rows * h) / 2 + h / 2;
+
+const scaleX = (w - gap) / w;
+const scaleY = (h - gap) / h;
+
+for (let i = 0; i < cols; i++) {
+    for (let j = 0; j < rows; j++) {
+        if ((j === 0 && i === 0) || (j === 0 && i === 7) || (j === 3 && i === 0) || (j === 3 && i === 7)) continue;
+
+        let px = startX + i * w;
+        let py = startY + j * h;
+        let colorActual = (i + j) % 2 !== 0 ? '#F5BEBF' : '#EDE9DD';
+        let opc = { isStatic: true, isSensor: true, render: { fillStyle: colorActual } };
+        let body;
+
+        if ((j === 0 && i === 1) || (j === 1 && i === 0)) {
+            body = Bodies.fromVertices(px + w/6, py + h/6, [[{x: 0, y: h}, {x: w, y: h}, {x: w, y: 0}]], opc);
+            Body.scale(body, scaleX, scaleY);
+        } else if ((j === 0 && i === 6) || (j === 1 && i === 7)) {
+            body = Bodies.fromVertices(px - w/6, py + h/6, [[{x: 0, y: 0}, {x: 0, y: h}, {x: w, y: h}]], opc);
+            Body.scale(body, scaleX, scaleY);
+        } else if ((j === 2 && i === 0) || (j === 3 && i === 1)) {
+            body = Bodies.fromVertices(px + w/6, py - h/6, [[{x: 0, y: 0}, {x: w, y: h}, {x: w, y: 0}]], opc);
+            Body.scale(body, scaleX, scaleY);
+        } else if ((j === 2 && i === 7) || (j === 3 && i === 6)) {
+            body = Bodies.fromVertices(px - w/6, py - h/6, [[{x: 0, y: 0}, {x: 0, y: h}, {x: w, y: 0}]], opc);
+            Body.scale(body, scaleX, scaleY);
+        } else {
+            body = Bodies.rectangle(px, py, w - gap, h - gap, opc);
+        }
+
+        casillas.push(body);
+        Composite.add(world, body);
+    }
+}
 
 Render.run(render);
 Runner.run(Runner.create(), engine);
 
-// ------------------------------------------------------------------
-// 0. MUROS Y VARIABLES DE ESTADO
-// ------------------------------------------------------------------
-const grosor = 100;
-const w = window.innerWidth;
-const h = window.innerHeight;
+// Interacción
+canvasContainer.addEventListener('click', (evento) => {
+    if (estado !== 'COLOCAR') return; 
 
-// El techo invisible está en -50
-const piso = Bodies.rectangle(w / 2, h + grosor/2, w + 200, grosor, { isStatic: true });
-const techo = Bodies.rectangle(w / 2, -grosor/2, w + 200, grosor, { isStatic: true });
-const muroIzq = Bodies.rectangle(-grosor/2, h / 2, grosor, h * 2, { isStatic: true });
-const muroDer = Bodies.rectangle(w + grosor/2, h / 2, grosor, h * 2, { isStatic: true });
+    const rect = canvasContainer.getBoundingClientRect();
+    const x = evento.clientX - rect.left;
+    const y = evento.clientY - rect.top;
 
-[piso, techo, muroIzq, muroDer].forEach(m => m.render.visible = false);
-Composite.add(world, [piso, techo, muroIzq, muroDer]);
-
-let estadoFase = 0; // 0 = Armado | 1 = Tensión Scroll | 2 = Bola Activa
-let conexionesHexagono = []; 
-let globalProgress = 0;
-let cursorObjetivo = { x: w / 2, y: h / 2 }; 
-
-// ------------------------------------------------------------------
-// 1. LA BOLA DE INTERVENCIÓN
-// ------------------------------------------------------------------
-// Nace como "fantasma" (isSensor: true) fuera de la pantalla (-300)
-const bolaIntervencion = Bodies.circle(w / 2, -300, 25, {
-    density: 1.5, 
-    frictionAir: 0.03, 
-    restitution: 0.2, 
-    isSensor: true, 
-    render: { visible: false } 
-});
-
-const cuerdaBola = Constraint.create({
-    pointA: { x: w / 2, y: -300 }, 
-    bodyB: bolaIntervencion,
-    stiffness: 0.015, 
-    damping: 0.05,
-    render: { visible: false } 
-});
-Composite.add(world, [bolaIntervencion, cuerdaBola]);
-
-// ------------------------------------------------------------------
-// 2. GEOMETRÍA: EL HEXÁGONO
-// ------------------------------------------------------------------
-const cx = window.innerWidth / 2;
-const cy = window.innerHeight / 2 - 50;
-const R = 130; 
-const T = 20;  
-const A = R * (Math.sqrt(3) / 2); 
-
-const metas = [
-    { id: 'top', x: cx, y: cy - A, angulo: 0, color: '#A6DDE5' }, 
-    { id: 'topDer', x: cx + 0.75 * R, y: cy - A / 2, angulo: Math.PI / 3, color: '#FEFBF2' }, 
-    { id: 'botDer', x: cx + 0.75 * R, y: cy + A / 2, angulo: -Math.PI / 3, color: '#F5BEBF' }, 
-    { id: 'bot', x: cx, y: cy + A, angulo: 0, color: '#A6DDE5' }, 
-    { id: 'botIzq', x: cx - 0.75 * R, y: cy + A / 2, angulo: Math.PI / 3, color: '#FEFBF2' }, 
-    { id: 'topIzq', x: cx - 0.75 * R, y: cy - A / 2, angulo: -Math.PI / 3, color: '#F5BEBF' } 
-];
-
-const fantasmas = metas.map(meta => {
-    return Bodies.rectangle(meta.x, meta.y, R, T, { 
-        isStatic: true, isSensor: true, angle: meta.angulo,
-        render: { fillStyle: meta.color, opacity: 0.3 } 
+    let piece = Bodies.rectangle(x, y, 40, 40, {
+        render: { fillStyle: '#8C2041' },
+        frictionAir: 0.1 
     });
-});
-Composite.add(world, fantasmas);
-
-const piezasReales = metas.map((meta, index) => {
-    const startX = (w * 0.2) + (index * ((w * 0.6) / 5)); 
-    const startY = window.innerHeight - 100;
     
-    const body = Bodies.rectangle(startX, startY, R, T, {
-        friction: 0.8, frictionAir: 0.08, restitution: 0, density: 0.05,
-        angle: meta.angulo, inertia: Infinity, 
-        render: { fillStyle: meta.color }
-    });
-    Body.setAngle(body, meta.angulo);
-    return body;
-});
-Composite.add(world, piezasReales);
+    playerPieces.push(piece);
+    Composite.add(world, piece);
 
-// ------------------------------------------------------------------
-// 3. MOUSE Y FASE DE ARMADO (ACTO 1)
-// ------------------------------------------------------------------
-const mouse = Mouse.create(render.canvas);
-const mouseConstraint = MouseConstraint.create(engine, {
-    mouse: mouse,
-    constraint: { stiffness: 0.2, render: { visible: false } }
-});
-Composite.add(world, mouseConstraint);
-render.mouse = mouse;
-
-let tiempoLatido = 0;
-
-Events.on(engine, 'afterUpdate', () => {
-    if (estadoFase === 0) {
-        let piezasAlineadas = 0;
-        piezasReales.forEach((pieza, i) => {
-            const estaAgarrada = mouseConstraint.body === pieza;
-            const dist = Vector.magnitude(Vector.sub(pieza.position, { x: metas[i].x, y: metas[i].y }));
-
-            if (dist < 40 && !estaAgarrada) {
-                Body.setPosition(pieza, { x: metas[i].x, y: metas[i].y });
-                Body.setVelocity(pieza, { x: 0, y: 0 }); 
-                piezasAlineadas++;
-            }
-        });
-        if (piezasAlineadas === 6) lograrEstabilidad();
-    }
+    estado = 'AZAR';
+    uiInstrucciones.innerText = `Pieza ${turnoActual + 1}/${maxTurnos} asegurada. Presiona el botón.`;
+    uiInstrucciones.style.color = '#1a2f36'; 
+    btnAzar.disabled = false;
 });
 
-function lograrEstabilidad() {
-    estadoFase = 1; 
-    fantasmas.forEach(f => f.render.opacity = 0);
-    Composite.remove(world, mouseConstraint); 
+// SECUENCIA AZAR
+btnAzar.addEventListener('click', () => {
+    if (estado !== 'AZAR') return;
+    
+    estado = 'GIRANDO'; 
+    btnAzar.disabled = true;
+    uiInstrucciones.innerText = "...";
 
-    piezasReales.forEach((pieza, i) => {
-        Body.setStatic(pieza, true); // Indestructibles por ahora
-        
-        const anclaje = Constraint.create({
-            pointA: { x: metas[i].x, y: metas[i].y },
-            bodyB: pieza,
-            pointB: { x: 0, y: 0 },
-            stiffness: 1, 
-            length: 0,
-            render: { visible: false }
-        });
-        
-        conexionesHexagono.push({ body: pieza, constraint: anclaje });
-        Composite.add(world, anclaje);
-    });
+    ruletaOverlay.classList.add('activa');
+
+    const opcionesRuleta = [1, 2, 1, 2, 1, 3];
+    const indiceElegido = Math.floor(Math.random() * opcionesRuleta.length);
+    const resultadoRuleta = opcionesRuleta[indiceElegido];
+
+    const anguloDestino = (indiceElegido * 60); 
+    rotacionAcumulada += 1800; 
+    const rotacionFinal = rotacionAcumulada - anguloDestino; 
+
+    const svgRuleta = document.getElementById('ruleta-grafica');
+    svgRuleta.style.transform = `rotate(${rotacionFinal}deg)`;
 
     setTimeout(() => {
-        document.body.classList.remove("bloqueado");
-        document.documentElement.classList.remove("bloqueado");
-        ScrollTrigger.refresh();
-    }, 500);
-}
+        ruletaOverlay.classList.remove('activa');
 
-// ------------------------------------------------------------------
-// 4. EL SCROLL (TENSIÓN) Y LA CAÑA
-// ------------------------------------------------------------------
-ScrollTrigger.create({
-    trigger: ".scroll-spacer",
-    start: "top top",
-    end: "bottom bottom",
-    scrub: 1,
-    onUpdate: (self) => {
-        if (estadoFase < 1) return; 
-        globalProgress = self.progress; 
-        
-        const uiTitle = document.getElementById("titulo-estado");
-        if (uiTitle) uiTitle.style.opacity = Math.max(0, 0.2 - (globalProgress * 0.5));
-
-        // EXACTAMENTE AL FINAL DEL SCROLL
-        if (globalProgress >= 0.99 && estadoFase === 1) {
-            activarBola();
-        } 
-        else if (globalProgress < 0.98 && estadoFase === 2) {
-            desactivarBola();
-        }
-    }
-});
-
-Events.on(engine, 'beforeUpdate', () => {
-    if (estadoFase === 0) {
-        tiempoLatido += 0.05;
-        fantasmas.forEach(f => f.render.opacity = 0.15 + Math.abs(Math.sin(tiempoLatido)) * 0.4);
-    } 
-    else if (estadoFase >= 1) {
-        // TEMBLOR
-        const shake = globalProgress * 3.5; 
-        
-        piezasReales.forEach((pieza, i) => {
-            const tieneAnclaje = conexionesHexagono.find(c => c.body === pieza && c.constraint !== null);
-            if (tieneAnclaje) {
-                Body.setPosition(pieza, {
-                    x: metas[i].x + (Math.random() - 0.5) * shake,
-                    y: metas[i].y + (Math.random() - 0.5) * shake
-                });
-                Body.setAngle(pieza, metas[i].angulo);
-            }
-        });
-
-        // MOVIMIENTO DE LA BOLA 
-        if (estadoFase === 2) {
-            cursorObjetivo.x += (mouse.position.x - cursorObjetivo.x) * 0.03;
-            cursorObjetivo.y += (mouse.position.y - cursorObjetivo.y) * 0.03;
-        } else {
-            // Se retira al techo
-            cursorObjetivo.x += (w / 2 - cursorObjetivo.x) * 0.05;
-            cursorObjetivo.y += (-300 - cursorObjetivo.y) * 0.05;
-        }
-        
-        cuerdaBola.pointA = { x: cursorObjetivo.x, y: cursorObjetivo.y };
-    }
-});
-
-// ------------------------------------------------------------------
-// 5. LIBERACIÓN Y DESTRUCCIÓN
-// ------------------------------------------------------------------
-function activarBola() {
-    estadoFase = 2;
-    
-    // ¡EL TRUCO! Teletransportamos la bola un poquito abajo del techo
-    // antes de volverla un objeto sólido, así no se queda atrapada.
-    Body.setPosition(bolaIntervencion, { x: w / 2, y: 50 });
-    Body.setVelocity(bolaIntervencion, { x: 0, y: 0 }); // Frenamos cualquier inercia
-    cursorObjetivo = { x: w / 2, y: 50 };
-
-    bolaIntervencion.isSensor = false; // Se vuelve física y cae
-    
-    // Quitamos la cualidad estática a las piezas que sigan vivas
-    piezasReales.forEach((pieza) => {
-        const tieneAnclaje = conexionesHexagono.find(c => c.body === pieza && c.constraint !== null);
-        if (tieneAnclaje) {
-            Body.setStatic(pieza, false);
-            Body.setInertia(pieza, pieza.mass * 10);
-        }
-    });
-}
-
-function desactivarBola() {
-    estadoFase = 1;
-    bolaIntervencion.isSensor = true; // Fantasma de nuevo para subir sin chocar
-    
-    piezasReales.forEach((pieza) => {
-        const tieneAnclaje = conexionesHexagono.find(c => c.body === pieza && c.constraint !== null);
-        if (tieneAnclaje) {
-            Body.setStatic(pieza, true);
-        }
-    });
-}
-
-// IMPACTO FÍSICO
-Events.on(engine, 'collisionStart', (event) => {
-    if (estadoFase !== 2) return;
-
-    event.pairs.forEach((pair) => {
-        const { bodyA, bodyB } = pair;
-        
-        if ((bodyA === bolaIntervencion && piezasReales.includes(bodyB)) || 
-            (bodyB === bolaIntervencion && piezasReales.includes(bodyA))) {
-            
-            const piezaGolpeada = bodyA === bolaIntervencion ? bodyB : bodyA;
-            const velocidadImpacto = Vector.magnitude(bolaIntervencion.velocity);
-
-            // Si el golpe es intencional
-            if (velocidadImpacto > 2.5) {
-                const indice = conexionesHexagono.findIndex(c => c.body === piezaGolpeada);
-                
-                if (indice !== -1 && conexionesHexagono[indice].constraint !== null) {
-                    Composite.remove(world, conexionesHexagono[indice].constraint);
-                    conexionesHexagono[indice].constraint = null; 
+        setTimeout(() => {
+            for (let i = 0; i < resultadoRuleta; i++) {
+                if (casillas.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * casillas.length);
+                    const selectedSquare = casillas.splice(randomIndex, 1)[0]; 
                     
-                    Body.applyForce(piezaGolpeada, piezaGolpeada.position, {
-                        x: bolaIntervencion.velocity.x * 0.015,
-                        y: bolaIntervencion.velocity.y * 0.015
+                    Body.setStatic(selectedSquare, false);
+                    cuerposTemblando.push(selectedSquare);
+
+                    playerPieces.forEach(pieza => {
+                        if (Vertices.contains(selectedSquare.vertices, pieza.position)) {
+                            if (!cuerposTemblando.includes(pieza) && !cuerposCayendo.includes(pieza)) {
+                                cuerposTemblando.push(pieza); 
+                            }
+                        }
                     });
                 }
             }
+
+            uiInstrucciones.innerText = `¡CRAC! La estructura cede...`;
+            uiInstrucciones.style.color = '#d9534f'; 
+
+            setTimeout(() => {
+                cuerposTemblando.forEach(c => cuerposCayendo.push(c));
+                cuerposTemblando = []; 
+
+                turnoActual++;
+
+                if (turnoActual >= maxTurnos) {
+                    estado = 'FIN';
+                    btnAzar.disabled = true;
+                    uiInstrucciones.innerText = `El Azar destruyó ${resultadoRuleta}. Evaluando inestabilidad...`;
+                    uiInstrucciones.style.color = '#1a2f36';
+                    setTimeout(evaluarVictoria, 2500); 
+                } else {
+                    estado = 'COLOCAR';
+                    btnAzar.disabled = true;
+                    uiInstrucciones.innerText = `El Azar destruyó ${resultadoRuleta}. Fase ${turnoActual + 1}: Asienta otra pieza.`;
+                    uiInstrucciones.style.color = '#8C2041';
+                }
+            }, 1000); 
+        }, 500); 
+    }, 3000); 
+});
+
+// ANIMACIÓN FÍSICAS
+Events.on(engine, 'beforeUpdate', () => {
+    for (let i = 0; i < cuerposTemblando.length; i++) {
+        let cuerpo = cuerposTemblando[i];
+        Body.setPosition(cuerpo, {
+            x: cuerpo.position.x + (Math.random() - 0.5) * 1.5,
+            y: cuerpo.position.y + (Math.random() - 0.5) * 1.5
+        });
+        Body.setAngle(cuerpo, cuerpo.angle + (Math.random() - 0.5) * 0.05);
+    }
+
+    for (let i = cuerposCayendo.length - 1; i >= 0; i--) {
+        let cuerpo = cuerposCayendo[i];
+        Body.scale(cuerpo, 0.92, 0.92); 
+        if (cuerpo.area < 10) {
+            Composite.remove(world, cuerpo);
+            cuerposCayendo.splice(i, 1);
         }
-    });
+    }
 });
 
-// ------------------------------------------------------------------
-// 6. RENDERIZADO VISUAL
-// ------------------------------------------------------------------
-Events.on(render, 'afterRender', () => {
-    if (estadoFase < 1) return; 
+// RESOLUCIÓN
+function evaluarVictoria() {
+    let piezasVivas = playerPieces.filter(p => p.area > 50);
     
-    const ctx = render.context;
-    
-    ctx.save();
-    // Hilo
-    ctx.beginPath();
-    ctx.moveTo(cursorObjetivo.x, cursorObjetivo.y);
-    ctx.lineTo(bolaIntervencion.position.x, bolaIntervencion.position.y);
-    ctx.strokeStyle = "rgba(166, 221, 229, 0.5)"; 
-    ctx.lineWidth = 2;
-    ctx.stroke();
+    if (piezasVivas.length >= 6) {
+        uiInstrucciones.innerText = `ESTRUCTURA ESTABLE. Mantuviste ${piezasVivas.length} piezas intactas.`;
+        uiInstrucciones.style.color = '#1a2f36'; 
+    } else {
+        uiInstrucciones.innerText = `COLAPSO TOTAL. Solo quedaron ${piezasVivas.length} piezas. El vacío reclama todo.`;
+        uiInstrucciones.style.color = '#8C2041'; 
+        
+        let condenados = [];
+        casillas.forEach(c => condenados.push(c));
+        casillas = []; 
+        
+        playerPieces.forEach(p => {
+            if (!cuerposCayendo.includes(p) && !cuerposTemblando.includes(p)) {
+                condenados.push(p);
+            }
+        });
 
-    // Bola
-    ctx.beginPath();
-    ctx.arc(bolaIntervencion.position.x, bolaIntervencion.position.y, 25, 0, 2 * Math.PI);
-    
-    let grad = ctx.createRadialGradient(
-        bolaIntervencion.position.x - 5, bolaIntervencion.position.y - 5, 2,
-        bolaIntervencion.position.x, bolaIntervencion.position.y, 25
-    );
-    grad.addColorStop(0, '#FEFBF2'); 
-    grad.addColorStop(0.5, '#A6DDE5'); 
-    grad.addColorStop(1, '#8C2041'); 
-    
-    ctx.fillStyle = grad;
-    ctx.fill();
-    
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = '#FEFBF2'; 
-    ctx.stroke();
-    
-    ctx.beginPath();
-    ctx.arc(bolaIntervencion.position.x - 5, bolaIntervencion.position.y - 5, 4, 0, 2 * Math.PI);
-    ctx.fillStyle = "#FEFBF2";
-    ctx.fill();
-    ctx.restore();
-});
+        condenados.forEach(cuerpo => {
+            Body.setStatic(cuerpo, false);
+            cuerposTemblando.push(cuerpo);
+        });
+
+        setTimeout(() => {
+            cuerposTemblando.forEach(c => cuerposCayendo.push(c));
+            cuerposTemblando = []; 
+        }, 1500);
+    }
+}
