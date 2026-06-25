@@ -20,15 +20,14 @@ const camera = new THREE.OrthographicCamera(
     frustumSize / -2, 
     -100, 1000
 );
-// Ángulo para apreciar que ahora es plano por debajo y tiene volumen por arriba
 camera.position.set(20, 25, 20); 
 camera.lookAt(0, 0, 0);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(width, height); // Usamos el ancho del contenedor
+renderer.setSize(width, height); 
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled = false; 
 
-// IMPORTANTE: Lo metemos al contenedor, no al body
 container.appendChild(renderer.domElement);
 
 // ==========================================
@@ -113,33 +112,46 @@ baseZocaloGroup.add(capaCirculo);
 const capaHexagonoSuperior = crearCapa(hexShape, GROSOR_HEXAGONO, (GROSOR_CIRCULO / 2)); 
 baseZocaloGroup.add(capaHexagonoSuperior);
 
+// Grupos anidados: autoRotationGroup (gira solo) > interactionGroup (arrastre)
+const autoRotationGroup = new THREE.Group();
+scene.add(autoRotationGroup);
+
 const interactionGroup = new THREE.Group();
 interactionGroup.add(baseZocaloGroup);
+autoRotationGroup.add(interactionGroup);
 
-// Escalo un poquitín la pieza para que respire bien dentro del contenedor
 interactionGroup.scale.set(0.8, 0.8, 0.8);
 
-scene.add(interactionGroup);
+const baseRotationX = -Math.PI / 8;
+const baseRotationY = Math.PI / 6;
+const baseRotationZ = 0;
+
+interactionGroup.rotation.x = baseRotationX;
+interactionGroup.rotation.y = baseRotationY;
+interactionGroup.rotation.z = baseRotationZ;
 
 // ==========================================
-// 5. INTERACCIÓN (Mapeada al contenedor)
+// 5. INTERACCIÓN Y RETORNO GSAP
 // ==========================================
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 let isDragging = false;
 let previousMousePosition = { x: 0, y: 0 };
+let returnTween = null;
 
-// Ahora escuchamos el clic solo dentro del contenedor de la galería
+function normalizeAngle(angle, target) {
+    while (angle < target - Math.PI) angle += Math.PI * 2;
+    while (angle > target + Math.PI) angle -= Math.PI * 2;
+    return angle;
+}
+
 container.addEventListener('mousedown', (e) => {
-    const rect = container.getBoundingClientRect();
-    // Coordenadas calculadas respecto al cuadro, no a la pantalla
-    mouse.x = ((e.clientX - rect.left) / width) * 2 - 1;
-    mouse.y = -((e.clientY - rect.top) / height) * 2 + 1;
-    
-    raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObjects([interactionGroup], true);
-    
-    if (intersects.length > 0) isDragging = true;
+    isDragging = true;
+    previousMousePosition = { x: e.clientX, y: e.clientY };
+    if (returnTween) {
+        returnTween.kill();
+        returnTween = null;
+    }
 });
 
 window.addEventListener('mousemove', (e) => {
@@ -155,10 +167,30 @@ window.addEventListener('mousemove', (e) => {
     previousMousePosition = { x: e.clientX, y: e.clientY };
 });
 
-window.addEventListener('mouseup', () => isDragging = false);
+window.addEventListener('mouseup', () => {
+    if (isDragging) {
+        isDragging = false;
+        
+        // Evitar giros excesivos
+        interactionGroup.rotation.x = normalizeAngle(interactionGroup.rotation.x, baseRotationX);
+        interactionGroup.rotation.y = normalizeAngle(interactionGroup.rotation.y, baseRotationY);
+        interactionGroup.rotation.z = normalizeAngle(interactionGroup.rotation.z, baseRotationZ);
+
+        returnTween = gsap.to(interactionGroup.rotation, {
+            x: baseRotationX,
+            y: baseRotationY,
+            z: baseRotationZ,
+            duration: 1.2,
+            ease: "power2.out",
+            onComplete: () => {
+                returnTween = null;
+            }
+        });
+    }
+});
 
 // ==========================================
-// 6. RENDER LOOP
+// 6. RENDER LOOP Y AJUSTE DE TAMAÑO
 // ==========================================
 window.addEventListener('resize', () => {
     width = container.clientWidth;
@@ -168,10 +200,14 @@ window.addEventListener('resize', () => {
     camera.right = frustumSize * aspect / 2;
     camera.updateProjectionMatrix();
     renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
 
 function animate() {
     requestAnimationFrame(animate);
+    if (!isDragging) {
+        autoRotationGroup.rotation.y += 0.005; // Rotación automática suave
+    }
     renderer.render(scene, camera);
 }
 

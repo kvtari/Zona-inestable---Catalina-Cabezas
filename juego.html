@@ -1,157 +1,72 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zona Inestable - Nubes Volumétricas</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
-    
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            background-color: #C5E0E9; /* Fondo celeste base */
-            color: #1a2f36; 
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* --- NUEVO FONDO CANVAS DE NUBES --- */
-        #skyCanvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -2;
-            display: block;
-        }
-
-        /* Bruma sutil para separar el fondo de la ruleta */
-        .filtro-bruma {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(180deg, rgba(197, 223, 228, 0.1) 0%, rgba(244, 239, 230, 0.3) 100%);
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        /* --- INTERFAZ --- */
-        .interfaz { text-align: center; margin-bottom: 0px; z-index: 10; display: flex; flex-direction: column; align-items: center;}
-        h1 { font-size: 24px; letter-spacing: 2px; text-transform: uppercase; font-weight: 300; margin-bottom: 5px; color: #1a2f36; }
-        #instrucciones { font-size: 16px; color: #8C2041; margin-bottom: 25px; font-weight: bold; height: 20px;}
-        
-        .controles-azar { position: relative; display: flex; justify-content: center; }
-        
-        button {
-            background-color: rgba(244, 239, 230, 0.8); 
-            color: #8C2041;
-            border: 1px solid rgba(140, 32, 65, 0.4);
-            padding: 10px 20px;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(4px);
-            font-weight: bold;
-            position: relative;
-            z-index: 25;
-        }
-        button:hover { background-color: #8C2041; color: #F4EFE6; border-color: #8C2041; }
-        button:disabled { border-color: transparent; color: rgba(140, 32, 65, 0.4); cursor: not-allowed; background: transparent; backdrop-filter: none; }
-        
-        #canvas-container { border: none; cursor: crosshair; z-index: 5; position: relative; }
-        canvas { filter: drop-shadow(0px 120px 70px rgba(0, 40, 60, 0.25)); }
-
-        /* --- RULETA Y MODAL --- */
-        #ruleta-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(197, 223, 228, 0.75); 
-            backdrop-filter: blur(12px); 
-            z-index: 100; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.5s ease;
-        }
-
-        #ruleta-overlay.activa { opacity: 1; visibility: visible; }
-
-        #ruleta-wrapper { 
-            position: relative; 
-            width: 480px; 
-            height: 480px; 
-            transform: scale(0.8);
-            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            filter: drop-shadow(0px 25px 30px rgba(0, 30, 45, 0.3));
-        }
-
-        #ruleta-overlay.activa #ruleta-wrapper { transform: scale(1); }
-
-        #pointer-top { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); z-index: 110; pointer-events: none; }
-        #pointer-centro { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 110; pointer-events: none; display: flex; justify-content: center; align-items: center; }
-        #ruleta-inner { width: 100%; height: 100%; }
-    </style>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zona Inestable — Experiencia Interactiva 3D</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="juego.css">
 </head>
 <body>
 
-    <canvas id="skyCanvas"></canvas>
+  <!-- Contenedor Pantalla Completa de la Experiencia -->
+  <div class="fullscreen-container" id="canvas-container">
+    <!-- Canvas para dibujar la plataforma única en perspectiva isométrica -->
+    <canvas id="tower-canvas"></canvas>
     
-    <div class="filtro-bruma"></div>
-
-    <div id="ruleta-overlay">
-        <div id="ruleta-wrapper">
-            
-            <div id="pointer-top">
-                <svg viewBox="0 0 30 24" width="45" height="36">
-                    <g filter="drop-shadow(0px 6px 4px rgba(0,0,0,0.4))">
-                        <polygon points="0,0 15,24 15,0" fill="#6A1630" />
-                        <polygon points="30,0 15,24 15,0" fill="#8C2041" />
-                    </g>
-                </svg>
-            </div>
-
-            <div id="ruleta-inner"></div>
-
-            <div id="pointer-centro">
-                <svg viewBox="-40 -80 80 160" width="110" height="220">
-                    <g filter="drop-shadow(0px 8px 6px rgba(0,30,45,0.3))">
-                        <polygon points="0,-65 -12,-8 0,0" fill="#6A1630" />
-                        <polygon points="0,-65 12,-8 0,0" fill="#8C2041" />
-                        <circle cx="0" cy="0" r="16" fill="#F4EFE6" />
-                        <circle cx="0" cy="0" r="11" fill="#8C2041" />
-                    </g>
-                </svg>
-            </div>
-            
-        </div>
-    </div>
-
-    <div class="interfaz">
-        <h1>Zona Inestable</h1>
-        <p id="instrucciones">Haz clic en un bloque para asentar tu primera pieza.</p>
-        
-        <div class="controles-azar">
-            <button id="trigger" disabled>Invocar el Azar</button>
-        </div>
+    <!-- Instrucción inferior -->
+    <div class="canvas-instruction">
+      Mueve el mouse lateralmente para dirigir la pieza y haz clic para soltarla. Mantén presionado el clic y arrastra para girar la torre.
     </div>
     
-    <div id="canvas-container"></div>
+    <!-- Widget Superior Izquierdo: Métricas del Sistema -->
+    <div class="overlay-panel top-left-panel">
+      <div class="panel-title">Zona Inestable</div>
+      <div class="panel-row">Turno: <strong id="n-turno">1</strong></div>
+      <div class="panel-row">Estado: <strong id="system-state">Estable</strong></div>
+      <div class="panel-row">Piezas: <strong id="pieces-count">0</strong></div>
+      <div class="panel-row stability-row">
+        <span>Centro de Masa: <strong id="stability-dev">0.0 px</strong></span>
+        <div class="mini-bar">
+          <div class="stability-fill" id="stability-fill" style="width: 0%;"></div>
+        </div>
+      </div>
+    </div>
 
-    <script src="magia.js?v=41"></script>
+    <!-- Widget Superior Derecho: Condición del Azar -->
+    <div class="overlay-panel top-right-panel" id="cond-card">
+      <div class="panel-lbl">Condición del Sistema</div>
+      <span class="cond-badge" id="cond-badge">Iniciando...</span>
+      <div class="cond-desc" id="cond-desc">Sorteando el marco inicial del sistema...</div>
+    </div>
+  </div>
 
+  <!-- Modal de Colapso Crítico (Fin de Juego) -->
+  <div id="collapse-modal" class="modal-overlay oculto">
+    <div class="modal-box">
+      <div class="modal-ey">Tensión Crítica</div>
+      <div class="modal-tit">Colapso del Sistema</div>
+      <div class="modal-desc">
+        "La estabilidad nunca fue permanente. Cada condición transformó las posibilidades del sistema."
+      </div>
+      <div class="modal-stats">
+        <div class="m-st">
+          <div class="m-num" id="final-pieces">0</div>
+          <div class="m-lbl">Piezas Asentadas</div>
+        </div>
+        <div class="m-st">
+          <div class="m-num" id="final-turns">0</div>
+          <div class="m-lbl">Turnos Resistidos</div>
+        </div>
+      </div>
+      <div class="modal-opts">
+        <button class="m-opt prim" onclick="reiniciarExperiencia()">Reiniciar Experiencia</button>
+        <button class="m-opt" onclick="volverLanding()">Volver al Landing</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="magia.js"></script>
 </body>
 </html>

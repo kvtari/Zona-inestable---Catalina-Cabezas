@@ -7,12 +7,10 @@ if (container) {
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xFEFBF2); 
 
-    // En lugar de window.innerWidth, usamos el tamaño del cuadrito
     let width = container.clientWidth;
     let height = container.clientHeight;
     let aspect = width / height;
     
-    // Frustum ajustado para encuadrar la pieza en un espacio pequeño
     const frustumSize = 35; 
 
     const camera = new THREE.OrthographicCamera(
@@ -27,9 +25,9 @@ if (container) {
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = false; 
     
-    // Metemos el canvas dentro del div, NO en el body
     container.appendChild(renderer.domElement);
 
     const COLORS = {
@@ -60,8 +58,12 @@ if (container) {
         return mesh;
     }
 
+    // Grupos anidados: autoRotationGroup (rotación Y) > boardGroup (arrastre/rotación libre)
+    const autoRotationGroup = new THREE.Group();
+    scene.add(autoRotationGroup);
+
     const boardGroup = new THREE.Group();
-    scene.add(boardGroup);
+    autoRotationGroup.add(boardGroup);
 
     function getPolygonVertices(sides, radius, offsetAngle = 0) {
         const vertices = [];
@@ -183,25 +185,38 @@ if (container) {
     buildFace(0.2, false); 
     buildFace(-0.2, true); 
 
-    boardGroup.rotation.x = -Math.PI / 2.5;
-    boardGroup.rotation.z = -Math.PI / 8;
+    const baseRotationX = -Math.PI / 2.5;
+    const baseRotationY = 0;
+    const baseRotationZ = -Math.PI / 8;
+
+    boardGroup.rotation.x = baseRotationX;
+    boardGroup.rotation.y = baseRotationY;
+    boardGroup.rotation.z = baseRotationZ;
     
-    // Reducimos un poco la escala para que encaje perfecto en el cuadro pequeño
     boardGroup.scale.set(1.5, 1.5, 1.5);
 
     // ==========================================
-    // INTERACCIÓN ADAPTADA AL CONTENEDOR CHICO
+    // INTERACCIÓN Y RETORNO GSAP
     // ==========================================
-    const mouse = new THREE.Vector2();
     let isDragging = false;
     let previousMousePosition = { x: 0, y: 0 };
+    let returnTween = null;
+
+    function normalizeAngle(angle, target) {
+        while (angle < target - Math.PI) angle += Math.PI * 2;
+        while (angle > target + Math.PI) angle -= Math.PI * 2;
+        return angle;
+    }
 
     container.addEventListener('mousedown', (e) => {
         isDragging = true;
         previousMousePosition = { x: e.clientX, y: e.clientY };
+        if (returnTween) {
+            returnTween.kill();
+            returnTween = null;
+        }
     });
 
-    // Detectamos el mouse dentro del contenedor completo
     window.addEventListener('mousemove', (e) => {
         if (isDragging) {
             const deltaMove = {
@@ -214,9 +229,28 @@ if (container) {
         previousMousePosition = { x: e.clientX, y: e.clientY };
     });
 
-    window.addEventListener('mouseup', () => isDragging = false);
+    window.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            
+            // Evitar giros innecesarios
+            boardGroup.rotation.x = normalizeAngle(boardGroup.rotation.x, baseRotationX);
+            boardGroup.rotation.y = normalizeAngle(boardGroup.rotation.y, baseRotationY);
+            boardGroup.rotation.z = normalizeAngle(boardGroup.rotation.z, baseRotationZ);
 
-    // Si ajustan el tamaño de la ventana, el cuadrito se recalcula
+            returnTween = gsap.to(boardGroup.rotation, {
+                x: baseRotationX,
+                y: baseRotationY,
+                z: baseRotationZ,
+                duration: 1.2,
+                ease: "power2.out",
+                onComplete: () => {
+                    returnTween = null;
+                }
+            });
+        }
+    });
+
     window.addEventListener('resize', () => {
         width = container.clientWidth;
         height = container.clientHeight;
@@ -225,10 +259,14 @@ if (container) {
         camera.right = frustumSize * aspect / 2;
         camera.updateProjectionMatrix();
         renderer.setSize(width, height);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     });
 
     function animate() {
         requestAnimationFrame(animate);
+        if (!isDragging) {
+            autoRotationGroup.rotation.y += 0.005; // Rotación automática
+        }
         renderer.render(scene, camera);
     }
     animate();

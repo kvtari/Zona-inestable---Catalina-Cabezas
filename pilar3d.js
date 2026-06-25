@@ -6,18 +6,16 @@ const container = document.getElementById('contenedor-pilar-3d');
 if (container) {
     const scene = new THREE.Scene();
     const COLORS = {
-        crema: 0xE9E6D5,
+        cafecito: 0xD4A257, // Color cafecito de las cañas
         vino: 0xD6D0CA,
         fondo: 0xFEFBF2
     };
     scene.background = new THREE.Color(COLORS.fondo);
 
-    // En lugar de window.innerWidth, usamos el tamaño del cuadrito
     let width = container.clientWidth;
     let height = container.clientHeight;
     let aspect = width / height;
     
-    // Frustum ajustado para encuadrar la pieza en el recuadro pequeño
     const frustumSize = 25; 
 
     const camera = new THREE.OrthographicCamera(
@@ -32,9 +30,9 @@ if (container) {
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = false; 
     
-    // Metemos el canvas dentro del div nuevo, NO en el body
     container.appendChild(renderer.domElement);
 
     function createVectorMesh(geometry, colorHex) {
@@ -62,27 +60,46 @@ if (container) {
     const depthPilar = 3;
 
     const pilarGeometry = new THREE.BoxGeometry(widthPilar, heightPilar, depthPilar);
-    const pilarMesh = createVectorMesh(pilarGeometry, COLORS.crema);
+    const pilarMesh = createVectorMesh(pilarGeometry, COLORS.cafecito);
+
+    // Grupos aninados: autoRotationGroup (gira solo) > interactionGroup (arrastre)
+    const autoRotationGroup = new THREE.Group();
+    scene.add(autoRotationGroup);
 
     const interactionGroup = new THREE.Group();
     interactionGroup.add(pilarMesh);
-    scene.add(interactionGroup);
+    autoRotationGroup.add(interactionGroup);
 
-    interactionGroup.rotation.x = -Math.PI / 8;
-    interactionGroup.rotation.y = Math.PI / 6;
+    const baseRotationX = -Math.PI / 8;
+    const baseRotationY = Math.PI / 6;
+    const baseRotationZ = 0;
 
-    // Puedes cambiar este valor (1.2) si quieres que el pilar se vea más grande o más chico
+    interactionGroup.rotation.x = baseRotationX;
+    interactionGroup.rotation.y = baseRotationY;
+    interactionGroup.rotation.z = baseRotationZ;
+
     interactionGroup.scale.set(0.9, 0.9, 0.9);
 
     // ==========================================
-    // INTERACCIÓN ADAPTADA AL CONTENEDOR CHICO
+    // INTERACCIÓN ADAPTADA Y RETORNO GSAP
     // ==========================================
     let isDragging = false;
     let previousMousePosition = { x: 0, y: 0 };
+    let returnTween = null;
+
+    function normalizeAngle(angle, target) {
+        while (angle < target - Math.PI) angle += Math.PI * 2;
+        while (angle > target + Math.PI) angle -= Math.PI * 2;
+        return angle;
+    }
 
     container.addEventListener('mousedown', (e) => {
         isDragging = true;
         previousMousePosition = { x: e.clientX, y: e.clientY };
+        if (returnTween) {
+            returnTween.kill();
+            returnTween = null;
+        }
     });
 
     window.addEventListener('mousemove', (e) => {
@@ -97,9 +114,28 @@ if (container) {
         previousMousePosition = { x: e.clientX, y: e.clientY };
     });
 
-    window.addEventListener('mouseup', () => isDragging = false);
+    window.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            
+            // Normalizar ángulos actuales para evitar rotaciones excesivas al volver
+            interactionGroup.rotation.x = normalizeAngle(interactionGroup.rotation.x, baseRotationX);
+            interactionGroup.rotation.y = normalizeAngle(interactionGroup.rotation.y, baseRotationY);
+            interactionGroup.rotation.z = normalizeAngle(interactionGroup.rotation.z, baseRotationZ);
 
-    // Si ajustan el tamaño de la ventana, el cuadrito se recalcula
+            returnTween = gsap.to(interactionGroup.rotation, {
+                x: baseRotationX,
+                y: baseRotationY,
+                z: baseRotationZ,
+                duration: 1.2,
+                ease: "power2.out",
+                onComplete: () => {
+                    returnTween = null;
+                }
+            });
+        }
+    });
+
     window.addEventListener('resize', () => {
         width = container.clientWidth;
         height = container.clientHeight;
@@ -108,10 +144,14 @@ if (container) {
         camera.right = frustumSize * aspect / 2;
         camera.updateProjectionMatrix();
         renderer.setSize(width, height);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     });
 
     function animate() {
         requestAnimationFrame(animate);
+        if (!isDragging) {
+            autoRotationGroup.rotation.y += 0.005; // Rotación automática suave
+        }
         renderer.render(scene, camera);
     }
     animate();

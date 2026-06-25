@@ -1,41 +1,172 @@
 // ===================================
-// LÓGICA DE LA GALERÍA CON LIGHTBOX
+// LÓGICA DE LA GALERÍA CON LIGHTBOX (DELEGACIÓN DE EVENTOS)
 // ===================================
-const imagenes = document.querySelectorAll(".grid img");
-const lightbox = document.getElementById("lightbox");
-const imagenAmpliada = document.getElementById("imagen-ampliada");
+const track = document.getElementById('track');
+const lightbox = document.getElementById('lightbox');
+const imagenAmpliada = document.getElementById('imagen-ampliada');
 const cerrar = document.querySelector(".cerrar");
 
-imagenes.forEach(imagen => {
-    imagen.addEventListener("click", () => {
-        lightbox.style.display = "flex";
-        imagenAmpliada.src = imagen.src;
+if (track && lightbox && imagenAmpliada) {
+    track.addEventListener("click", (e) => {
+        if (e.target.tagName === 'IMG') {
+            lightbox.style.display = "flex";
+            imagenAmpliada.src = e.target.src;
+        }
     });
-});
-
-cerrar.addEventListener("click", () => {
-    lightbox.style.display = "none";
-});
-
-lightbox.addEventListener("click", (e) => {
-    if(e.target === lightbox){
-        lightbox.style.display = "none";
-    }
-});
-
-// ===================================
-// LÓGICA DEL CARRUSEL
-// ===================================
-let index = 0;
-function mover(direccion) {
-    const track = document.getElementById('track');
-    index += direccion;
-    
-    if (index < 0) index = 0;
-    if (index > 2) index = 2; 
-    
-    track.style.transform = `translateX(-${index * 33.33}%)`;
 }
+
+if (cerrar) {
+    cerrar.addEventListener("click", () => {
+        lightbox.style.display = "none";
+    });
+}
+
+if (lightbox) {
+    lightbox.addEventListener("click", (e) => {
+        if(e.target === lightbox){
+            lightbox.style.display = "none";
+        }
+    });
+}
+
+// ===================================
+// LÓGICA DEL CARRUSEL (RESPONSIVO E INFINITO CON CLONES)
+// ===================================
+let index = 0; // Índice lógico activo (0 a 4)
+const totalOriginals = 5; // Cantidad de imágenes originales
+let cloned = false;
+
+function inicializarClones() {
+    const trackEl = document.getElementById('track');
+    if (!trackEl || cloned) return;
+    const originalItems = Array.from(trackEl.querySelectorAll('img'));
+    if (originalItems.length !== totalOriginals) return;
+
+    // Clonar las 2 últimas imágenes para colocarlas al inicio
+    const cloneLast1 = originalItems[totalOriginals - 2].cloneNode(true);
+    const cloneLast2 = originalItems[totalOriginals - 1].cloneNode(true);
+    // Clonar las 2 primeras imágenes para colocarlas al final
+    const cloneFirst1 = originalItems[0].cloneNode(true);
+    const cloneFirst2 = originalItems[1].cloneNode(true);
+
+    // Remover IDs de los clones para evitar duplicados en el DOM (mantienen sus clases de estilos)
+    cloneLast1.removeAttribute('id');
+    cloneLast2.removeAttribute('id');
+    cloneFirst1.removeAttribute('id');
+    cloneFirst2.removeAttribute('id');
+
+    // Insertar clones al inicio del track (en orden inverso de inserción)
+    trackEl.insertBefore(cloneLast2, trackEl.firstChild);
+    trackEl.insertBefore(cloneLast1, trackEl.firstChild);
+    // Añadir clones al final del track
+    trackEl.appendChild(cloneFirst1);
+    trackEl.appendChild(cloneFirst2);
+
+    cloned = true;
+
+    // Registrar la escucha de la transición para el ciclo infinito
+    trackEl.addEventListener('transitionend', (e) => {
+        if (e.propertyName !== 'transform') return;
+        
+        let itemsPerView = 3;
+        if (window.innerWidth <= 768) {
+            itemsPerView = 1;
+        } else if (window.innerWidth <= 1024) {
+            itemsPerView = 2;
+        }
+
+        if (index >= totalOriginals) {
+            // Salto silencioso al inicio
+            trackEl.style.transition = 'none';
+            index = index % totalOriginals;
+            const w = 100 / itemsPerView;
+            const idealTrans = (50 - w/2) - (index + 2) * w;
+            trackEl.style.transform = `translateX(${idealTrans}%)`;
+            trackEl.offsetHeight; // Forzar reflow
+            trackEl.style.transition = '';
+        } else if (index < 0) {
+            // Salto silencioso al final
+            trackEl.style.transition = 'none';
+            index = (index % totalOriginals + totalOriginals) % totalOriginals;
+            const w = 100 / itemsPerView;
+            const idealTrans = (50 - w/2) - (index + 2) * w;
+            trackEl.style.transform = `translateX(${idealTrans}%)`;
+            trackEl.offsetHeight; // Forzar reflow
+            trackEl.style.transition = '';
+        }
+    });
+}
+
+function actualizarCarrusel() {
+    const trackEl = document.getElementById('track');
+    if (!trackEl) return;
+    const items = trackEl.querySelectorAll('img');
+
+    let itemsPerView = 3;
+    if (window.innerWidth <= 768) {
+        itemsPerView = 1;
+    } else if (window.innerWidth <= 1024) {
+        itemsPerView = 2;
+    }
+
+    // Índice lógico actual normalizado a [0, totalOriginals - 1]
+    const currentLogicalIndex = (index % totalOriginals + totalOriginals) % totalOriginals;
+
+    // Asignar clase active a las imágenes (originales y clones) correspondientes
+    items.forEach((item, idx) => {
+        // Dado que agregamos 2 clones al inicio, el índice físico se desfasa por 2.
+        const itemLogicalIdx = (idx - 2 + totalOriginals) % totalOriginals;
+        if (itemLogicalIdx === currentLogicalIndex) {
+            item.classList.add('active');
+        } else {
+            item.classList.remove('active');
+        }
+    });
+
+    // Sincronizar los puntos indicadores (Dots)
+    const dots = document.querySelectorAll('.dot');
+    dots.forEach((dot, idx) => {
+        if (idx === currentLogicalIndex) {
+            dot.classList.add('active');
+        } else {
+            dot.classList.remove('active');
+        }
+    });
+
+    // Calcular traducción centrada sobre la posición física (index + 2)
+    const w = 100 / itemsPerView;
+    const idealTrans = (50 - w/2) - (index + 2) * w;
+    trackEl.style.transform = `translateX(${idealTrans}%)`;
+}
+
+function mover(direccion) {
+    index += direccion;
+    actualizarCarrusel();
+}
+
+// Permitir saltar directamente a una imagen mediante los dots
+window.irASlide = function(n) {
+    index = n;
+    actualizarCarrusel();
+};
+
+// Inicializar clones
+inicializarClones();
+
+// Ejecutar primera actualización sin transición para evitar deslizamiento inicial al cargar
+const trackElInit = document.getElementById('track');
+if (trackElInit) {
+    trackElInit.style.transition = 'none';
+    actualizarCarrusel();
+    trackElInit.offsetHeight; // Forzar reflow
+    trackElInit.style.transition = '';
+}
+
+// Resetear posición al cambiar tamaño de pantalla
+window.addEventListener('resize', () => {
+    index = 0;
+    actualizarCarrusel();
+});
 
 // ===================================
 // LÓGICA DEL MENÚ DE NAVEGACIÓN Y HOVER DE FUNDAMENTOS
@@ -94,52 +225,72 @@ document.addEventListener("DOMContentLoaded", function () {
             el.style.color = 'rgba(254, 251, 242, 0.6)';
         });
     });
-});
 
-// =================================================
-// ESTRUCTURA INESTABLE HERO: FÍSICA Y TENSIÓN
-// =================================================
-document.addEventListener("DOMContentLoaded", () => {
-    const hero = document.querySelector(".hero");
-    const grid = document.querySelector(".hero-grid-bg");
-    const zLetter = document.querySelector(".z-tension");
-    const inestableWord = document.querySelector(".inestable-tension"); 
+    // ===================================
+    // LÓGICA DEL MENÚ MÓVIL (HAMBURGUESA)
+    // ===================================
+    const navToggle = document.getElementById("nav-toggle");
+    const navList = document.getElementById("nav-list");
 
-    if (!hero || !zLetter || typeof gsap === "undefined") return;
+    if (navToggle && navList) {
+        navToggle.addEventListener("click", () => {
+            navToggle.classList.toggle("is-active");
+            navList.classList.toggle("is-open");
+            document.body.classList.toggle("no-scroll");
+        });
 
-    gsap.registerPlugin(ScrollTrigger);
-
-    let tlHero = gsap.timeline({
-        scrollTrigger: {
-            trigger: hero,
-            start: "top top",
-            end: "+=800",
-            pin: true,
-            scrub: 1.5,
-            anticipatePin: 1
-        }
-    });
-
-    if (grid) {
-        tlHero.to(grid, { opacity: 1, duration: 0.1 }, 0);
+        // Cerrar menú al hacer clic en un enlace
+        navLinks.forEach(link => {
+            link.addEventListener("click", () => {
+                navToggle.classList.remove("is-active");
+                navList.classList.remove("is-open");
+                document.body.classList.remove("no-scroll");
+            });
+        });
     }
 
-    tlHero.to([zLetter, inestableWord], {
-        rotation: 3.5,       
-        skewX: -2,           
-        y: 4,                
-        ease: "power2.inOut",
-        duration: 0.6        
-    }, 0);
+    // ===================================
+    // ACCESO RESTRINGIDO A CRÉDITOS (SÓLO VÍA NAV LINK)
+    // ===================================
+    const creditosLink = document.querySelector('.nav-link[href="#creditos"]');
+    const footerCreditos = document.getElementById('creditos');
 
-    tlHero.to([zLetter, inestableWord], {
-        rotation: 1.5,       
-        skewX: 0,            
-        y: 2,                
-        ease: "power1.out",
-        duration: 0.4        
-    }, 0.6);
+    // Inicializar flag global para evitar redirección de GSAP al ver créditos
+    window.isViewingCredits = false;
+
+    if (creditosLink && footerCreditos) {
+        // Ocultar footer por defecto al iniciar
+        footerCreditos.style.display = 'none';
+
+        creditosLink.addEventListener('click', (e) => {
+            e.preventDefault(); // Evitar el scroll nativo instantáneo
+
+            // Indicar que se está visualizando créditos
+            window.isViewingCredits = true;
+
+            // Hacer visible el footer
+            footerCreditos.style.display = 'block';
+
+            // Desplazar suavemente hasta él
+            setTimeout(() => {
+                footerCreditos.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 50);
+        });
+
+        // Ocultar de nuevo cuando el usuario scrollea hacia arriba y queda fuera de la vista
+        window.addEventListener('scroll', () => {
+            if (footerCreditos.style.display === 'block') {
+                const rect = footerCreditos.getBoundingClientRect();
+                // Si la parte superior del footer está completamente fuera de la pantalla por abajo
+                if (rect.top > window.innerHeight) {
+                    footerCreditos.style.display = 'none';
+                    window.isViewingCredits = false; // Resetear flag
+                }
+            }
+        });
+    }
 });
+
 
 // ==========================================
 // MAGIA GSAP: AUTOMATIZAR PORTAL DE ENTRADA
@@ -169,7 +320,8 @@ window.addEventListener("load", () => {
                 boton.style.opacity = "0";
               }
 
-              if (self.progress >= 0.99 && !haSaltado) {
+              // Redirigir solo si el progreso es completo, no se están viendo los créditos y se scrollea hacia abajo
+              if (self.progress >= 0.99 && !haSaltado && !window.isViewingCredits && self.direction === 1) {
                 haSaltado = true; 
                 window.location.href = "juego.html";
               }
