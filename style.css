@@ -10,6 +10,29 @@
 html {
     scroll-behavior: smooth;
     scroll-padding-top: 80px;
+    scrollbar-width: thin;
+    scrollbar-color: #8C2041 #FEFBF2;
+}
+
+/* Personalización del Scrollbar General (Chrome, Edge, Safari, Opera) */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #FEFBF2;
+    border-left: 1px solid rgba(140, 32, 65, 0.08);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #8C2041;
+    border-radius: 5px;
+    border: 2px solid #FEFBF2;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #6B1831;
 }
 
 /* ================================= */
