@@ -13,9 +13,19 @@
         }
     </script>
     
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=1.2">
 </head>
 <body>
+
+    <!-- OVERLAY DE CARGA DE LA EXPERIENCIA -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="tower-loader">
+            <div class="loader-base"></div>
+            <div class="loader-pilar"></div>
+            <div class="loader-top"></div>
+        </div>
+        <div class="loading-title">CARGANDO EXPERIENCIA</div>
+    </div>
 
     <nav class="franja-nav" id="main-nav">
         <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú">
@@ -27,8 +37,9 @@
             <li><a href="#que-es" class="nav-link">¿En qué consiste?</a></li>
             <li><a href="#galeria" class="nav-link">Contenido</a></li>
             <li><a href="#preparacion" class="nav-link">¿Cómo se juega?</a></li>
+            <li><a href="#fotos" class="nav-link">Galería</a></li>
             <li><a href="#modos" class="nav-link">Modos</a></li>
-            <li><a href="#concepto" class="nav-link">Concepto</a></li>
+            <li><a href="#fundamento" class="nav-link">Fundamento</a></li>
             <li><a href="#creditos" class="nav-link">Créditos</a></li>
         </ul>
     </nav>
@@ -40,7 +51,7 @@
                     ZONA<br>INESTABLE
                 </h1>
                 <p class="hero-subtitle">
-                    Construye tu estructura y derriba las <br> piezas rivales sin provocar el colapso.
+                    Construye tu estructura y derriba las piezas rivales sin provocar el colapso.
                 </p>
                 <a href="juego.html" class="btn hero-btn">IR A LA EXPERIENCIA INTERACTIVA</a>
             </div>
@@ -84,7 +95,7 @@
             <p class="cuerpo-texto">Antes de comenzar la partida, los jugadores deben construir la estructura de juego ensamblando las plataformas con sus respectivos pilares y bases. La cantidad de torres y la ubicación de cada plataforma quedan a criterio de cada jugador, sin necesidad de utilizar todas las piezas disponibles. Una vez armada la estructura, se distribuyen las piezas de colores sobre las plataformas siguiendo la grilla, ubicando las piezas especiales que valen 2 puntos más cerca del centro, mientras que las piezas normales valen 1 punto. Luego, cada jugador extrae al azar una pieza de color de una bolsa para determinar con qué color jugará durante la partida.</p>
         </div>
         <div class="bloque-imagen">
-            <img src="assets/armado.gif" alt="armado">
+            <img src="assets/armado2.gif" alt="armado">
         </div>
     </section>
 
@@ -93,11 +104,11 @@
             <p class="cuerpo-texto">En cada turno, el jugador lanza la ruleta, que define con qué mano deberá jugar (derecha, izquierda, ambas manos o elección del jugador de la derecha) y qué combinación de caña y bola utilizará. Con estas condiciones establecidas, el jugador toma distancia y realiza un movimiento pendular con la caña para impactar las piezas rivales, intentando expulsarlas de las plataformas para obtener puntos.</p>
         </div>
         <div class="bloque-imagen">
-            <img src="" alt="Espacio para segundo GIF" class="carrusel-gif-placeholder" style="background: rgba(140, 32, 65, 0.05); border: 2px dashed rgba(140, 32, 65, 0.2); width: 100%; min-height: 250px; box-shadow: 15px 15px 0px rgba(140, 32, 65, 0.05);">
+            <img src="assets/armado.gif" alt="desarrollo del turno">
         </div>
     </section>
 
-    <div class="carrusel-container">
+    <div class="carrusel-container scroll-section" id="fotos">
         <div class="carrusel-track" id="track">
             <img src="assets/torre editable 1.png" class="foto1" alt="torre 1.png">
             <img src="assets/torre editable 2.png" class="foto2" alt="torre 2.png">
@@ -140,12 +151,12 @@
         </div>
     </section>
 
-    <section class="seccion-fundamento scroll-section" id="concepto">
+    <section class="seccion-fundamento scroll-section" id="fundamento">
         <div class="contenedor-principal">
             
             <!-- Encabezado Editorial -->
             <div class="fundamento-header-editorial">
-                <span class="fundamento-tagline">FUNDAMENTO TEÓRICO</span>
+                <span class="fundamento-tagline">FUNDAMENTO</span>
                 <h1 class="fundamento-titulo-editorial">LA ALEATORIEDAD COMO CONDICIÓN</h1>
                 <div class="fundamento-linea-decorativa"></div>
             </div>
@@ -156,14 +167,6 @@
                     <p>
                         En Zona Inestable la experiencia se desarrolla a partir de un sistema dinámico compuesto por distintos elementos que interactúan de manera interdependiente. Jugadores, piezas, plataforma, reglas y condiciones de juego conforman una estructura de relaciones espaciales, físicas y estratégicas que da forma a cada partida. Ninguno de estos elementos actúa de manera aislada; por el contrario, cada acción, decisión o modificación afecta al conjunto, alterando continuamente la configuración del juego y las posibilidades de acción que este ofrece.
                     </p>
-                </div>
-                <div class="fundamento-visual-container">
-                    <div class="fundamento-geometric-visual">
-                        <div class="geometric-inner">
-                            <span class="visual-symbol">✲</span>
-                            <span class="visual-label">SISTEMA INTERDEPENDIENTE</span>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -234,9 +237,9 @@
       <div class="portal-sticky">
         <div class="portal-circulo-wrapper">
           
-          <svg class="portal-svg" viewBox="0 0 100 100">
-            <polygon class="figura-fondo" points="50,5 89,28 89,72 50,95 11,72 11,28"></polygon>
-            <polygon class="figura-progreso" pathLength="100" points="50,5 89,28 89,72 50,95 11,72 11,28"></polygon>
+          <svg class="portal-svg" viewBox="-15 -15 130 130">
+            <path class="figura-fondo" d="M 50,5 L 89,28 L 89,72 L 50,95 L 11,72 L 11,28 Z"></path>
+            <path class="figura-progreso" pathLength="100" d="M 50,5 L 89,28 L 89,72 L 50,95 L 11,72 L 11,28 Z"></path>
           </svg>
 
           <div id="boton-portal" class="portal-enlace">
@@ -248,91 +251,15 @@
     </section>
 
     <footer class="footer-creditos scroll-section" id="creditos">
-        <div class="contenedor-principal">
-            
-            <div class="footer-header-diseno">
-                <span class="footer-tagline">ESPECIFICACIONES</span>
-                <h2 class="footer-titulo-diseno">CRÉDITOS Y REGISTRO</h2>
-                <div class="footer-linea-decorativa"></div>
+        <div class="contenedor-principal footer-simple-container">
+            <div class="footer-col-texto">
+                <p class="footer-texto-simple">
+                    Este sitio experimental corresponde a un proyecto desarrollado por <strong>Catalina Cabezas</strong> en el marco del <strong>Taller de Diseño de Interacción 2026</strong> de la <strong>e[ad] PUCV</strong>. La plataforma fue construida utilizando <strong>Visual Studio Code</strong> y <strong>GitHub</strong>.<br><br>La bitácora de su proceso creativo se encuentra disponible en <a href="https://wiki.ead.pucv.cl/U3_Taller_IxD_-Catalina_Cabezas" target="_blank">Wiki Casiopea</a>.
+                </p>
             </div>
-
-            <div class="footer-grid-board">
-                <!-- Celda 1: Proyecto -->
-                <div class="footer-board-cell cell-proyecto">
-                    <div class="cell-bg-svg">
-                        <svg viewBox="0 0 100 100" class="blueprint-svg">
-                            <line x1="10" y1="85" x2="90" y2="85" stroke="rgba(140, 32, 65, 0.15)" stroke-width="1.5"/>
-                            <polygon points="50,45 80,85 20,85" fill="none" stroke="rgba(140, 32, 65, 0.15)" stroke-width="1.5"/>
-                            <line x1="50" y1="45" x2="50" y2="85" stroke="rgba(140, 32, 65, 0.15)" stroke-width="1" stroke-dasharray="2,2"/>
-                            <line x1="30" y1="45" x2="70" y2="45" stroke="rgba(140, 32, 65, 0.3)" stroke-width="2"/>
-                            <circle cx="35" cy="38" r="5" fill="none" stroke="#8C2041" stroke-width="1.5"/>
-                            <circle cx="65" cy="38" r="5" fill="#D4A257"/>
-                        </svg>
-                    </div>
-                    <div class="cell-label">01 / PROYECTO</div>
-                    <h3 class="cell-title">ZONA INESTABLE</h3>
-                    <p class="cell-desc">Landing y desarrollo de experimentación digital para el juego de mesa. Un espacio interactivo diseñado en torno a la tensión estructural, el equilibrio físico y la interacción táctil.</p>
-                </div>
-
-                <!-- Celda 2: Autoría -->
-                <div class="footer-board-cell cell-autor">
-                    <div class="cell-bg-svg">
-                        <svg viewBox="0 0 100 100" class="blueprint-svg">
-                            <polygon points="50,15 80,32 80,68 50,85 20,68 20,32" fill="none" stroke="rgba(140, 32, 65, 0.15)" stroke-width="1.5"/>
-                            <circle cx="50" cy="50" r="20" fill="none" stroke="rgba(140, 32, 65, 0.15)" stroke-width="1" stroke-dasharray="3,3"/>
-                            <polygon points="50,30 67,40 67,60 50,70 33,60 33,40" fill="none" stroke="#D4A257" stroke-width="1.5"/>
-                        </svg>
-                    </div>
-                    <div class="cell-label">02 / DISEÑO</div>
-                    <h3 class="cell-title">CATALINA CABEZAS</h3>
-                    <p class="cell-desc">Estudiante del Taller de Diseño de Interacción 2026. Desarrollo web, modelado 3D interactivo y diseño de interfaz.</p>
-                </div>
-
-                <!-- Celda 3: Institución -->
-                <div class="footer-board-cell cell-academia">
-                    <div class="cell-label">03 / ACADEMIA</div>
-                    <div class="academia-content-wrapper">
-                        <div class="academia-info">
-                            <div class="ead-brand-footer">
-                                <span class="ead-logo-sigla">e<strong>[ad]</strong></span>
-                                <div class="ead-txt-box">
-                                    <span class="ead-facultad">Escuela de Arquitectura y Diseño</span>
-                                    <span class="ead-uni">Pontificia Universidad Católica de Valparaíso</span>
-                                </div>
-                            </div>
-                            <p class="cell-desc">Taller de Diseño de Interacción 2026. Formación académica y experimentación en interfaces digitales y físicas.</p>
-                        </div>
-                        <div class="academia-logo">
-                            <svg class="pucv-seal-svg" viewBox="0 0 100 100">
-                                <circle cx="50" cy="50" r="45" fill="none" stroke="#8C2041" stroke-width="2"/>
-                                <circle cx="50" cy="50" r="40" fill="none" stroke="#8C2041" stroke-width="0.8" stroke-dasharray="2, 2"/>
-                                <path d="M 50,22 L 50,78 M 28,45 L 72,45" stroke="#8C2041" stroke-width="2.5" stroke-linecap="round"/>
-                                <path d="M 40,55 L 60,65 M 60,55 L 40,65" stroke="#8C2041" stroke-width="1.5"/>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Celda 4: Sistema / Mecánica -->
-                <div class="footer-board-cell cell-sistema">
-                    <div class="cell-bg-svg">
-                        <svg viewBox="0 0 100 100" class="blueprint-svg">
-                            <circle cx="50" cy="50" r="35" fill="none" stroke="rgba(140, 32, 65, 0.15)" stroke-width="1.5"/>
-                            <line x1="15" y1="50" x2="85" y2="50" stroke="rgba(140, 32, 65, 0.1)" stroke-width="1"/>
-                            <line x1="50" y1="15" x2="50" y2="85" stroke="rgba(140, 32, 65, 0.1)" stroke-width="1"/>
-                            <circle cx="50" cy="50" r="10" fill="none" stroke="#8C2041" stroke-width="1.5"/>
-                            <line x1="50" y1="50" x2="75" y2="25" stroke="#D4A257" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                    </div>
-                    <div class="cell-label">04 / DISPOSITIVO</div>
-                    <h3 class="cell-title">SISTEMA DINÁMICO</h3>
-                    <p class="cell-desc">Integración de modelos tridimensionales interactivos (Three.js), simuladores de gravedad, físicas de colisión y dinámicas lúdicas basadas en el azar.</p>
-                </div>
-            </div>
-
-            <!-- Línea de Derechos Reservados -->
-            <div class="footer-bottom-diseno">
-                <p>&copy; 2026 ZONA INESTABLE. PROYECTO ACADÉMICO. TODOS LOS DERECHOS REGISTRADOS.</p>
+            <div class="footer-col-logos">
+                <img src="assets/logo pucv.png" alt="Logo PUCV" class="logo-pucv-img">
+                <img src="assets/logo ead.png" alt="Logo e[ad]" class="logo-ead-img">
             </div>
         </div>
     </footer>
@@ -348,6 +275,19 @@
     <script type="module" src="canas3d.js"></script>
     <script type="module" src="ruleta3d.js"></script>
     <script type="module" src="torreHero.js"></script>
+    
+    <!-- Filtro SVG para convertir texto blanco a negro manteniendo los corchetes rojos del logo ead -->
+    <svg style="display: none;">
+        <defs>
+            <filter id="blacken-white">
+                <feColorMatrix type="matrix" values="
+                    1.5 -1.5   0.0   0.0   0.0
+                    0.0   0.0   0.0   0.0   0.0
+                    0.0  -0.8   0.8   0.0   0.0
+                    0.0   0.0   0.0   1.0   0.0" />
+            </filter>
+        </defs>
+    </svg>
     
 </body>
 </html>

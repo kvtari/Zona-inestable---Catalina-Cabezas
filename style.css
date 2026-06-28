@@ -9,6 +9,7 @@
 
 html {
     scroll-behavior: smooth;
+    scroll-padding-top: 80px;
 }
 
 /* ================================= */
@@ -101,7 +102,7 @@ body {
     line-height: 1.8;
     color: #6B1831;
     margin-bottom: 40px;   
-    max-width: 500px;
+    max-width: 38rem;
     margin-left: 0;
     margin-right: 0;
 }
@@ -131,7 +132,7 @@ body {
 #contenedor-torre-3d {
     position: absolute;
     top: 0;
-    left: 50%;
+    left: 58%;
     transform: translateX(-50%);
     width: 100vw;
     height: 100vh;
@@ -226,6 +227,7 @@ body {
 /* ================================= */
 /* CARRUSEL                          */
 /* ================================= */
+#fotos { scroll-margin-top: 150px; }
 .carrusel-container { overflow: hidden; width: 100%; position: relative; }
 .carrusel-track { display: flex; transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1); }
 .carrusel-track img {
@@ -300,8 +302,8 @@ body {
     padding: 30px 0; flex: 1; box-shadow: none; transition: transform 0.4s ease;
 }
 .tarjeta-modo:hover { transform: translateY(-5px); }
-.tarjeta-modo h2 { font-family: 'Bebas Neue', sans-serif; color: #8C2041; font-size: 32px; letter-spacing: 0.05em; margin-bottom: 15px; }
-.tarjeta-modo p { font-family: 'Rubik', sans-serif; font-size: 15px; color: #6B1831; text-align: justify; line-height: 1.6; }
+.tarjeta-modo h2 { font-family: 'Bebas Neue', sans-serif; color: #8C2041; font-size: 36px; letter-spacing: 0.05em; margin-bottom: 15px; }
+.tarjeta-modo p { font-family: 'Rubik', sans-serif; font-size: 17px; color: #6B1831; text-align: justify; line-height: 1.7; }
 
 
 /* ================================================= */
@@ -353,12 +355,9 @@ body {
     margin-top: 25px;
 }
 
-/* Bloque de Entrada / Lead Section (2 columnas) */
+/* Bloque de Entrada / Lead Section (Full width) */
 .fundamento-intro-editorial {
-    display: grid;
-    grid-template-columns: 1.2fr 0.8fr;
-    gap: 60px;
-    align-items: center;
+    display: block;
     margin-bottom: 80px;
 }
 
@@ -367,7 +366,7 @@ body {
     font-size: 1.3rem;
     line-height: 1.9;
     color: #FEFBF2;
-    text-align: justify;
+    text-align: left;
     margin: 0;
     font-weight: 400;
 }
@@ -492,7 +491,7 @@ body {
     font-size: 1.05rem;
     line-height: 1.75;
     color: rgba(254, 251, 242, 0.85);
-    text-align: justify;
+    text-align: left;
     margin: 0;
 }
 
@@ -558,16 +557,27 @@ body {
   display: flex; justify-content: center; align-items: center; overflow: hidden;
 }
 
-.portal-circulo-wrapper { position: relative; width: 350px; height: 350px; }
-.portal-svg { width: 100%; height: 100%; }
-.portal-svg polygon { fill: none; stroke-width: 3; stroke-linejoin: round; }
-.figura-fondo { stroke: rgba(254, 251, 242, 0.15); }
-.figura-progreso { stroke: #FEFBF2; stroke-dasharray: 100; stroke-dashoffset: 100; filter: drop-shadow(0px 0px 8px rgba(254, 251, 242, 0.6)); }
+.portal-circulo-wrapper { 
+  position: relative; 
+  width: min(600px, 85vw); 
+  height: min(600px, 85vw); 
+}
+.portal-svg { width: 100%; height: 100%; overflow: visible !important; }
+.portal-svg polygon, .portal-svg path { fill: none; stroke-width: 3.5; stroke-linejoin: round; }
+.figura-fondo { stroke: rgba(254, 251, 242, 0.12); }
+.figura-progreso { 
+  stroke: #FEFBF2; 
+  stroke-dasharray: 100; 
+  stroke-dashoffset: 100; 
+  filter: drop-shadow(0 0 2px #FEFBF2) 
+          drop-shadow(0 0 8px rgba(254, 251, 242, 0.9)) 
+          drop-shadow(0 0 20px rgba(254, 251, 242, 0.55)); 
+}
 
 .portal-enlace {
   position: absolute; top: 0; left: 0; right: 0; bottom: 0;
   display: flex; justify-content: center; align-items: center; text-align: center;
-  color: #FEFBF2; font-family: 'Rubik', sans-serif; font-size: 20px;
+  color: #FEFBF2; font-family: 'Rubik', sans-serif; font-size: 24px;
   letter-spacing: 2px; font-weight: bold; opacity: 0; transform: scale(0.9);
   transition: opacity 0.5s ease, transform 0.5s ease;
 }
@@ -733,7 +743,7 @@ body.no-scroll {
 #galeria { scroll-margin-top: 160px; }
 #preparacion { scroll-margin-top: 120px; }
 #modos { scroll-margin-top: 150px; }
-#concepto { scroll-margin-top: 88px; }
+#fundamento { scroll-margin-top: 0; }
 
 /* TABLERO DE MÁRGENES INDIVIDUALES */
 #que-es { margin-top: 250px; margin-bottom: 150px; }
@@ -800,13 +810,13 @@ body.no-scroll {
 .footer-creditos {
     background-color: #FEFBF2; /* Fondo crema oficial */
     background-image: 
-        linear-gradient(rgba(140, 32, 65, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(140, 32, 65, 0.05) 1px, transparent 1px);
+        linear-gradient(rgba(140, 32, 65, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(140, 32, 65, 0.04) 1px, transparent 1px);
     background-size: 20px 20px; /* Grilla delicada */
-    padding: 80px 20px 40px 20px;
+    padding: 70px 4vw;
     width: 100%;
-    color: #6B1831;
-    border-top: 2px solid #8C2041; /* Borde vino sólido superior */
+    color: #6B1831; /* Original dark wine/brown text */
+    border-top: 2px solid #8C2041; /* Original wine red top border */
 }
 
 .footer-creditos .contenedor-principal {
@@ -814,236 +824,257 @@ body.no-scroll {
     margin: 0 auto;
 }
 
-/* Header Créditos Diseño */
-.footer-header-diseno {
-    margin-bottom: 50px;
-    text-align: left;
-}
-
-.footer-tagline {
-    font-family: 'Rubik', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    color: #8C2041;
-    display: block;
-    margin-bottom: 10px;
-}
-
-.footer-titulo-diseno {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(2.5rem, 5vw, 4.5rem);
-    font-weight: normal;
-    line-height: 1;
-    color: #8C2041;
-    margin: 0;
-}
-
-.footer-linea-decorativa {
-    width: 60px;
-    height: 3px;
-    background-color: #D4A257;
-    margin-top: 15px;
-}
-
-/* Grilla Tablero de Créditos */
-.footer-grid-board {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    border: 1px solid rgba(140, 32, 65, 0.2);
-    background-color: transparent;
-    margin-top: 40px;
-    margin-bottom: 40px;
-}
-
-.footer-board-cell {
-    padding: 40px;
-    border-right: 1px solid rgba(140, 32, 65, 0.2);
-    border-bottom: 1px solid rgba(140, 32, 65, 0.2);
-    position: relative;
-    overflow: hidden;
-    background-color: rgba(254, 251, 242, 0.5); /* Translúcido crema */
-    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-}
-
-/* Eliminar bordes sobrantes */
-.footer-board-cell:nth-child(2n) {
-    border-right: none;
-}
-
-.footer-board-cell:nth-child(3),
-.footer-board-cell:nth-child(4) {
-    border-bottom: none;
-}
-
-.cell-bg-svg {
-    position: absolute;
-    right: -20px;
-    bottom: -20px;
-    width: 180px;
-    height: 180px;
-    opacity: 0.6;
-    pointer-events: none;
-    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-    z-index: 1;
-}
-
-.blueprint-svg {
-    width: 100%;
-    height: 100%;
-}
-
-.cell-label {
-    font-family: 'Rubik', sans-serif;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: #D4A257; /* Dorado */
-    letter-spacing: 0.15em;
-    margin-bottom: 15px;
-    position: relative;
-    z-index: 2;
-}
-
-.cell-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 2.2rem;
-    color: #8C2041; /* Vino */
-    margin-bottom: 12px;
-    letter-spacing: 0.03em;
-    font-weight: normal;
-    position: relative;
-    z-index: 2;
-}
-
-.cell-desc {
-    font-family: 'Rubik', sans-serif;
-    font-size: 0.95rem;
-    line-height: 1.7;
-    color: #6B1831;
-    text-align: justify;
-    position: relative;
-    z-index: 2;
-    max-width: 90%;
-    margin: 0;
-}
-
-/* Hover en Celdas */
-.footer-board-cell:hover {
-    background-color: rgba(140, 32, 65, 0.03);
-}
-
-.footer-board-cell:hover .cell-bg-svg {
-    transform: scale(1.08) rotate(8deg);
-    opacity: 0.95;
-}
-
-/* Estructura Academia */
-.academia-content-wrapper {
+.footer-simple-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 30px;
-    position: relative;
-    z-index: 2;
-    height: 100%;
-    width: 100%;
+    gap: 50px;
 }
 
-.academia-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+.footer-col-texto {
+    flex: 1.3;
 }
 
-.ead-brand-footer {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 15px;
-}
-
-.ead-logo-sigla {
+.footer-texto-simple {
     font-family: 'Rubik', sans-serif;
-    font-size: 1.8rem;
-    color: #8C2041;
-}
-
-.ead-txt-box {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.ead-facultad {
-    font-family: 'Rubik', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: #8C2041;
-}
-
-.ead-uni {
-    font-family: 'Rubik', sans-serif;
-    font-size: 0.75rem;
-    color: rgba(107, 24, 49, 0.7);
-}
-
-.academia-logo {
-    flex-shrink: 0;
-}
-
-.academia-logo .pucv-seal-svg {
-    width: 70px;
-    height: 70px;
-    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-
-.footer-board-cell:hover .pucv-seal-svg {
-    transform: scale(1.08) rotate(5deg);
-}
-
-/* Derechos Reservados */
-.footer-bottom-diseno {
-    border-top: 1px solid rgba(140, 32, 65, 0.15);
-    padding-top: 30px;
-    text-align: center;
-}
-
-.footer-bottom-diseno p {
-    font-family: 'Rubik', sans-serif;
-    font-size: 0.8rem;
-    color: rgba(107, 24, 49, 0.5);
+    font-size: 0.95rem;
+    line-height: 1.8;
+    color: #6B1831;
+    text-align: left;
     margin: 0;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.02em;
+}
+
+.footer-texto-simple strong {
+    color: #8C2041; /* Wine red for strong elements */
+    font-weight: 700;
+}
+
+.footer-texto-simple a {
+    color: #8C2041; /* Wine red for links */
+    text-decoration: underline;
+    transition: color 0.3s ease;
+}
+
+.footer-texto-simple a:hover {
+    color: #D4A257; /* Gold accent on hover */
+}
+
+.footer-col-logos {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: auto;
+    gap: 25px;
+}
+
+.logo-pucv-img {
+    height: 80px;
+    width: auto;
+    max-width: 320px;
+    object-fit: contain;
+    /* Convert white PNG outline to black */
+    filter: brightness(0);
+}
+
+.logo-ead-img {
+    height: 52px;
+    width: auto;
+    max-width: 280px;
+    object-fit: contain;
+    /* Apply SVG filter to turn white text black while preserving red brackets */
+    filter: url(#blacken-white);
 }
 
 /* Responsive Grid */
 @media(max-width: 768px) {
-    .footer-grid-board {
-        grid-template-columns: 1fr;
-        border-bottom: none;
-    }
-    
-    .footer-board-cell {
-        border-right: none !important;
-        border-bottom: 1px solid rgba(140, 32, 65, 0.2) !important;
-        padding: 30px 20px;
-    }
-    
-    .footer-board-cell:last-child {
-        border-bottom: none !important;
-    }
-    
-    .academia-content-wrapper {
+    .footer-simple-container {
         flex-direction: column;
         align-items: flex-start;
-        gap: 25px;
+        gap: 35px;
     }
     
-    .academia-logo {
-        align-self: flex-end;
+    .footer-col-logos {
+        align-items: flex-start;
+        width: 100%;
+        margin-left: 0;
+        gap: 20px;
+    }
+
+    .logo-pucv-img {
+        height: 68px;
+    }
+
+    .logo-ead-img {
+        height: 45px;
+    }
+}
+
+/* ================================= */
+/* OVERLAY DE CARGA DE LA EXPERIENCIA*/
+/* ================================= */
+.loading-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: #FEFBF2; /* Cremoso oficial */
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+.loading-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* ANIMACIÓN DE LAS PIEZAS DE LA TORRE */
+.tower-loader {
+    position: relative;
+    width: 120px;
+    height: 160px;
+    margin-bottom: 30px;
+}
+
+/* Pieza 1: Base */
+.loader-base {
+    position: absolute;
+    bottom: 0;
+    left: 30px; /* Centered for 60px width */
+    width: 60px; /* Smaller base */
+    height: 20px;
+    background-color: #EDE9DD; /* Cremita oficial */
+    border: 1px solid rgba(140, 32, 65, 0.15); /* Subtle outline for contrast against cream background */
+    border-radius: 4px;
+    opacity: 0;
+    transform: translateY(50px);
+    animation: loadBase 2.8s infinite ease-in-out;
+}
+
+/* Pieza 2: Pilar */
+.loader-pilar {
+    position: absolute;
+    bottom: 20px;
+    left: 52px;
+    width: 16px;
+    height: 80px;
+    background-color: #D7C49E; /* Color madera clara del pilar 3D */
+    border-radius: 4px;
+    opacity: 0;
+    transform: translateY(-100px);
+    animation: loadPilar 2.8s infinite ease-in-out;
+}
+
+/* Pieza 3: Plataforma superior */
+.loader-top {
+    position: absolute;
+    bottom: 100px;
+    left: 10px; /* Centered for 100px width */
+    width: 100px; /* Larger platform */
+    height: 15px;
+    background-color: #F5BEBF; /* Rosada oficial */
+    border-radius: 3px;
+    opacity: 0;
+    transform: translateY(-150px);
+    animation: loadTop 2.8s infinite ease-in-out;
+}
+
+/* Keyframes secuenciales */
+@keyframes loadBase {
+    0% {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    15% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    85% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(0);
+    }
+}
+
+@keyframes loadPilar {
+    0%, 15% {
+        opacity: 0;
+        transform: translateY(-100px);
+    }
+    35% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    85% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(0);
+    }
+}
+
+@keyframes loadTop {
+    0%, 35% {
+        opacity: 0;
+        transform: translateY(-150px);
+    }
+    55% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    85% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(0);
+    }
+}
+
+/* TEXTO CARGANDO */
+.loading-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.1em;
+    color: #8C2041;
+    margin-bottom: 8px;
+    animation: pulseText 1.5s infinite ease-in-out;
+}
+
+.loading-subtitle {
+    font-family: 'Rubik', sans-serif;
+    font-size: 13px;
+    color: #6B1831;
+    opacity: 0.7;
+    letter-spacing: 0.05em;
+}
+
+@keyframes pulseText {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+/* ================================= */
+/* AJUSTES PARA PANTALLAS GRANDES (TV/4K) */
+/* ================================= */
+@media (min-width: 1500px) {
+    html {
+        font-size: 19px; /* Escala proporcionalmente todo el diseño en rem */
+    }
+}
+
+@media (min-width: 2000px) {
+    html {
+        font-size: 23px; /* Escala proporcional para televisores de gran formato o 4K */
     }
 }

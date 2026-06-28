@@ -257,6 +257,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Inicializar flag global para evitar redirección de GSAP al ver créditos
     window.isViewingCredits = false;
+    let isScrollingToCredits = false;
 
     if (creditosLink && footerCreditos) {
         // Ocultar footer por defecto al iniciar
@@ -267,24 +268,54 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Indicar que se está visualizando créditos
             window.isViewingCredits = true;
+            isScrollingToCredits = true;
 
             // Hacer visible el footer
             footerCreditos.style.display = 'block';
+
+            // Marcar activamente en el menú
+            navLinks.forEach(link => link.classList.remove("active-nav"));
+            creditosLink.classList.add("active-nav");
 
             // Desplazar suavemente hasta él
             setTimeout(() => {
                 footerCreditos.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 50);
+
+            // Desactivar flag temporal después de que termine la animación de desplazamiento
+            setTimeout(() => {
+                isScrollingToCredits = false;
+            }, 1800);
         });
 
-        // Ocultar de nuevo cuando el usuario scrollea hacia arriba y queda fuera de la vista
+        // Ocultar de nuevo cuando el usuario scrollea hacia arriba de la sección de transición
         window.addEventListener('scroll', () => {
             if (footerCreditos.style.display === 'block') {
-                const rect = footerCreditos.getBoundingClientRect();
-                // Si la parte superior del footer está completamente fuera de la pantalla por abajo
-                if (rect.top > window.innerHeight) {
-                    footerCreditos.style.display = 'none';
-                    window.isViewingCredits = false; // Resetear flag
+                const distanceToBottom = document.documentElement.scrollHeight - window.innerHeight - window.scrollY;
+                
+                if (distanceToBottom < 100) {
+                    navLinks.forEach(link => link.classList.remove("active-nav"));
+                    creditosLink.classList.add("active-nav");
+                } else {
+                    // Si el usuario sube y deja el final del todo, marcamos "Fundamento"
+                    const fundamentoLink = document.querySelector('.nav-link[href="#fundamento"]');
+                    if (fundamentoLink) {
+                        navLinks.forEach(link => link.classList.remove("active-nav"));
+                        fundamentoLink.classList.add("active-nav");
+                    }
+                }
+
+                if (!isScrollingToCredits) {
+                    const portal = document.querySelector('.portal-transicion');
+                    if (portal) {
+                        const portalTop = portal.offsetTop;
+                        // Si el usuario sube scroll y pasa el inicio del portal, ocultamos créditos de nuevo
+                        if (window.scrollY < portalTop - 100) {
+                            footerCreditos.style.display = 'none';
+                            window.isViewingCredits = false; // Resetear flag de bloqueo
+                            creditosLink.classList.remove("active-nav");
+                        }
+                    }
                 }
             }
         });
@@ -293,13 +324,48 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 // ==========================================
-// MAGIA GSAP: AUTOMATIZAR PORTAL DE ENTRADA
+// MAGIA GSAP: AUTOMATIZAR PORTAL DE ENTRADA Y PANTALLA DE CARGA
 // ==========================================
 window.addEventListener("load", () => {
+    let haSaltado = false;
+
+    // Función para mostrar el cargando y luego redirigir
+    function mostrarCargandoYRedirigir() {
+        const overlay = document.getElementById('loading-overlay');
+        if (overlay) {
+            overlay.classList.add('active');
+        }
+        setTimeout(() => {
+            window.location.href = "juego.html";
+        }, 5600); // 5.6 segundos (2 ciclos completos de la animación de 2.8s)
+    }
+
+    // Interceptar click en el botón del Hero
+    const heroBtn = document.querySelector('.hero-btn');
+    if (heroBtn) {
+        heroBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (!haSaltado) {
+                haSaltado = true;
+                mostrarCargandoYRedirigir();
+            }
+        });
+    }
+
+    // Interceptar click en el botón del Portal
+    const botonPortal = document.getElementById("boton-portal");
+    if (botonPortal) {
+        botonPortal.addEventListener("click", () => {
+            if (!haSaltado) {
+                haSaltado = true;
+                mostrarCargandoYRedirigir();
+            }
+        });
+    }
+
+    // Registro de GSAP y ScrollTrigger
     if (typeof gsap !== 'undefined') {
         gsap.registerPlugin(ScrollTrigger);
-
-        let haSaltado = false; 
 
         gsap.to(".figura-progreso", {
           strokeDashoffset: 0, 
@@ -309,7 +375,7 @@ window.addEventListener("load", () => {
             parent: document.body,
             start: "top top",     
             end: "bottom bottom", 
-            scrub: 2,             
+            scrub: 0.8,             
             onUpdate: (self) => {
               const boton = document.getElementById("boton-portal");
               
@@ -321,9 +387,9 @@ window.addEventListener("load", () => {
               }
 
               // Redirigir solo si el progreso es completo, no se están viendo los créditos y se scrollea hacia abajo
-              if (self.progress >= 0.99 && !haSaltado && !window.isViewingCredits && self.direction === 1) {
+              if (self.progress >= 0.98 && !haSaltado && !window.isViewingCredits && self.direction === 1) {
                 haSaltado = true; 
-                window.location.href = "juego.html";
+                mostrarCargandoYRedirigir();
               }
             }
           }

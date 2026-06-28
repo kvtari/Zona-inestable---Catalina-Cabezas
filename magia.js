@@ -4,6 +4,188 @@
    ══════════════════════════════════════════ */
 
 (function () {
+  // --- SINTETIZADOR DE SONIDO (WEB AUDIO API) ---
+  let audioCtx = null;
+
+  function initAudio() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+  }
+
+  // Sonido de lanzamiento / drop (whoosh corto)
+  function playSoundDrop() {
+    try {
+      initAudio();
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(320, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.16);
+      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.16);
+      osc.start(audioCtx.currentTime);
+      osc.stop(audioCtx.currentTime + 0.16);
+    } catch (e) {
+      console.warn("Audio error:", e);
+    }
+  }
+
+  // Sonido de impacto / aterrizaje (wood clack/thud)
+  function playSoundLand(weight) {
+    try {
+      initAudio();
+      if (!audioCtx) return;
+      const currentTime = audioCtx.currentTime;
+      const gainNode = audioCtx.createGain();
+      gainNode.connect(audioCtx.destination);
+      
+      const volume = Math.min(0.35, 0.08 + weight * 0.1);
+      const duration = Math.min(0.28, 0.09 + weight * 0.07);
+      const baseFreq = Math.max(85, 190 - weight * 45); 
+      
+      const osc = audioCtx.createOscillator();
+      const oscGain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(baseFreq, currentTime);
+      osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.45, currentTime + duration);
+      oscGain.gain.setValueAtTime(volume, currentTime);
+      oscGain.gain.exponentialRampToValueAtTime(0.001, currentTime + duration);
+      
+      osc.connect(oscGain);
+      oscGain.connect(gainNode);
+      
+      // Ruido sordo del choque inicial
+      const bufferSize = audioCtx.sampleRate * 0.015;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+      const noiseNode = audioCtx.createBufferSource();
+      noiseNode.buffer = buffer;
+      const noiseGain = audioCtx.createGain();
+      noiseGain.gain.setValueAtTime(volume * 0.7, currentTime);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.015);
+      
+      if (weight >= 1.0) {
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(750, currentTime);
+        noiseNode.connect(filter);
+        filter.connect(noiseGain);
+      } else {
+        noiseNode.connect(noiseGain);
+      }
+      
+      noiseGain.connect(gainNode);
+      
+      osc.start(currentTime);
+      osc.stop(currentTime + duration);
+      noiseNode.start(currentTime);
+      noiseNode.stop(currentTime + 0.015);
+    } catch (e) {
+      console.warn("Audio error:", e);
+    }
+  }
+
+  // Sonido de crujido (wood creaking)
+  let lastCreakTime = 0;
+  function playSoundCreak(intensity) {
+    try {
+      initAudio();
+      if (!audioCtx) return;
+      const now = Date.now();
+      if (now - lastCreakTime < 320 / intensity) return;
+      lastCreakTime = now;
+      
+      const currentTime = audioCtx.currentTime;
+      const clicks = 2 + Math.floor(Math.random() * 3);
+      for (let i = 0; i < clicks; i++) {
+        const delay = i * 0.038 + Math.random() * 0.015;
+        const osc = audioCtx.createOscillator();
+        const oscGain = audioCtx.createGain();
+        osc.type = 'sine';
+        const freq = 550 + Math.random() * 700;
+        osc.frequency.setValueAtTime(freq, currentTime + delay);
+        
+        const vol = 0.012 + intensity * 0.025;
+        oscGain.gain.setValueAtTime(vol, currentTime + delay);
+        oscGain.gain.exponentialRampToValueAtTime(0.001, currentTime + delay + 0.018);
+        
+        osc.connect(oscGain);
+        oscGain.connect(audioCtx.destination);
+        osc.start(currentTime + delay);
+        osc.stop(currentTime + delay + 0.025);
+      }
+    } catch (e) {
+      console.warn("Audio error:", e);
+    }
+  }
+
+  // Sonido de colapso de la torre
+  function playSoundCollapse() {
+    try {
+      initAudio();
+      if (!audioCtx) return;
+      const currentTime = audioCtx.currentTime;
+      const duration = 1.8;
+      
+      const bufferSize = audioCtx.sampleRate * duration;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      
+      let lastOut = 0.0;
+      for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        data[i] = (lastOut + (0.022 * white)) / 1.022;
+        lastOut = data[i];
+        data[i] *= 3.8; 
+      }
+      
+      const noiseNode = audioCtx.createBufferSource();
+      noiseNode.buffer = buffer;
+      const gainNode = audioCtx.createGain();
+      gainNode.gain.setValueAtTime(0.32, currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, currentTime + duration);
+      
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(280, currentTime);
+      filter.frequency.exponentialRampToValueAtTime(70, currentTime + duration);
+      
+      noiseNode.connect(filter);
+      filter.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      
+      noiseNode.start(currentTime);
+      noiseNode.stop(currentTime + duration);
+      
+      // Impactos extra de derrumbe
+      for (let i = 0; i < 5; i++) {
+        const delay = i * 0.28 + Math.random() * 0.12;
+        const osc = audioCtx.createOscillator();
+        const oscGain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(70 + Math.random() * 90, currentTime + delay);
+        oscGain.gain.setValueAtTime(0.22 - i * 0.035, currentTime + delay);
+        oscGain.gain.exponentialRampToValueAtTime(0.001, currentTime + delay + 0.25);
+        osc.connect(oscGain);
+        oscGain.connect(audioCtx.destination);
+        osc.start(currentTime + delay);
+        osc.stop(currentTime + delay + 0.25);
+      }
+    } catch (e) {
+      console.warn("Audio error:", e);
+    }
+  }
+
   // Configuración de Canvas y Contexto
   const canvas = document.getElementById('tower-canvas');
   const ctx = canvas.getContext('2d');
@@ -326,7 +508,7 @@
       apply: (p) => {
         const val = Math.random() < 0.5 ? 1.0 : 0.3;
         p.weight = val;
-        p.weightLabel = val === 1.0 ? 'PESO: 1.0 (Punta)' : 'PESO: 0.3 (Liviana Media)';
+        p.weightLabel = val === 1.0 ? 'PESO: 1.0 (Punta Pesada)' : 'PESO: 0.3 (Liviana Media)';
         if (val === 1.0) {
           p.shapeType = 'especial';
           p.vertices = generarVerticesPieza('especial', p.size);
@@ -338,7 +520,7 @@
         const desc = document.getElementById('cond-desc');
         if (desc) {
           if (val === 1.0) {
-            desc.textContent = 'Pieza en punta (Peso: 1.0)';
+            desc.textContent = 'Pieza en punta pesada (Peso: 1.0)';
           } else {
             desc.textContent = 'Pieza liviana media (Peso: 0.3)';
           }
@@ -512,7 +694,7 @@
     const stateHdr = document.getElementById('system-state');
     if (stateHdr) {
       stateHdr.textContent = G.estado;
-      stateHdr.style.color = G.estado === 'Crítico' ? '#8C2041' : (G.estado === 'Inestable' ? '#5a4215' : '#2d5c3a');
+      stateHdr.style.color = G.estado === 'Crítico' ? '#8C2041' : (G.estado === 'Inestable' ? '#5a4215' : '#52ABB8');
     }
     
     // Colapso por vuelco total
@@ -1272,6 +1454,8 @@
         G.platform.visualTiltY = G.platform.tiltY + Math.cos(G.wobbleTime * 1.3) * maxWobbleAngle * wobbleIntensity;
         G.platform.visualSwayX = G.platform.swayX + Math.sin(G.wobbleTime) * maxWobbleSway * wobbleIntensity;
         G.platform.visualSwayY = G.platform.swayY + Math.cos(G.wobbleTime * 1.3) * maxWobbleSway * wobbleIntensity;
+        
+        playSoundCreak(wobbleIntensity);
       } else {
         G.platform.visualTiltX = G.platform.tiltX;
         G.platform.visualTiltY = G.platform.tiltY;
@@ -1346,6 +1530,7 @@
         plat.z = targetZ;
         // Impacto y destellos contra el pilar
         spawnImpactParticles(0, 0, targetZ - 12, '#D1CAB6', 40);
+        playSoundLand(2.5); // Sonido de impacto pesado para el ensamblado
         cameraShake = 20.0;
         plat.bounceZ = -20.0;
         G.pieceState = 'settled';
@@ -1498,6 +1683,7 @@
             }
             
             plat.pieces.push(landedPiece);
+            playSoundLand(G.activePiece.weight);
             
             if (G.activePiece.weight >= 2.0 || G.activePiece.shapeType === 'especial') {
               spawnImpactParticles(G.activePiece.x, G.activePiece.y, targetZ, G.activePiece.color, 50);
@@ -1696,7 +1882,7 @@
     if (pcEl) pcEl.textContent = 0;
     if (systemState) {
       systemState.textContent = 'Estable';
-      systemState.style.color = '#2d5c3a';
+      systemState.style.color = '#52ABB8';
     }
     if (logList) logList.innerHTML = '';
     
@@ -1710,6 +1896,7 @@
   }
 
   function triggerCollapse() {
+    playSoundCollapse();
     G.juegoTerminado = true;
     G.pieceState = 'collapsed';
     collapseFrame = 0;
@@ -1841,6 +2028,7 @@
       if (!dragHasMoved) {
         if (G.activePiece && G.pieceState === 'aiming' && !G.juegoTerminado) {
           G.pieceState = 'falling';
+          playSoundDrop();
           logEvent('Liberando pieza. Iniciando caída...', 'info');
         }
       }
@@ -1853,6 +2041,7 @@
       e.preventDefault();
       if (G.activePiece && G.pieceState === 'aiming' && !G.juegoTerminado) {
         G.pieceState = 'falling';
+        playSoundDrop();
         logEvent('Liberando pieza. Iniciando caída...', 'info');
       }
     }

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Zona Inestable — Experiencia Interactiva 3D</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rubik:wght@400;500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="juego.css">
 </head>
 <body>
@@ -23,9 +23,8 @@
     <!-- Widget Superior Izquierdo: Métricas del Sistema -->
     <div class="overlay-panel top-left-panel">
       <div class="panel-title">Zona Inestable</div>
-      <div class="panel-row">Turno: <strong id="n-turno">1</strong></div>
-      <div class="panel-row">Estado: <strong id="system-state">Estable</strong></div>
       <div class="panel-row">Piezas: <strong id="pieces-count">0</strong></div>
+      <div class="panel-row">Estado: <strong id="system-state" style="color: #52ABB8;">Estable</strong></div>
       <div class="panel-row stability-row">
         <span>Centro de Masa: <strong id="stability-dev">0.0 px</strong></span>
         <div class="mini-bar">
@@ -40,6 +39,7 @@
       <span class="cond-badge" id="cond-badge">Iniciando...</span>
       <div class="cond-desc" id="cond-desc">Sorteando el marco inicial del sistema...</div>
     </div>
+    <button id="btn-reiniciar-directo" class="btn-reiniciar-directo" onclick="window.reiniciarExperiencia()">Reiniciar</button>
   </div>
 
   <!-- Modal de Colapso Crítico (Fin de Juego) -->

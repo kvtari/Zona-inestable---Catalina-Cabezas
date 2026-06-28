@@ -7,7 +7,7 @@
 
 :root {
   --crema:       #EDE9DD;
-  --celeste:     #A6DDE5;
+  --celeste:     #52ABB8;
   --frambuesa:   #8C2041;
   --rosa:        #F5BEBF;
   --frambuesa-d: #6a1830;
@@ -19,7 +19,7 @@
 body {
   background: var(--crema);
   color: var(--dark);
-  font-family: 'DM Mono', monospace;
+  font-family: 'Rubik', sans-serif;
   overflow: hidden;
   height: 100vh;
   width: 100vw;
@@ -172,7 +172,7 @@ body {
 }
 .cond-badge {
   align-self: flex-start;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: .08em;
   text-transform: uppercase;
   padding: 4px 12px;
@@ -189,7 +189,7 @@ body {
 .cond-badge.b-gravedad  { background: rgba(245, 190, 191, 0.45); color: var(--frambuesa-d); }
 
 .cond-desc {
-  font-size: 12.5px;
+  font-size: 13px;
   line-height: 1.5;
   color: var(--dark);
 }
@@ -301,7 +301,7 @@ body {
   to { transform: scale(1); opacity: 1; }
 }
 .modal-ey {
-  font-size: 10px;
+  font-size: 13px;
   letter-spacing: .18em;
   text-transform: uppercase;
   color: var(--frambuesa);
@@ -309,14 +309,15 @@ body {
   margin-bottom: 12px;
 }
 .modal-tit {
-  font-family: 'DM Serif Display', serif;
-  font-size: 26px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 44px;
+  letter-spacing: 0.05em;
   color: var(--dark);
   margin-bottom: 16px;
-  line-height: 1.15;
+  line-height: 1.1;
 }
 .modal-desc {
-  font-size: 13.5px;
+  font-size: 16px;
   line-height: 1.8;
   color: var(--muted);
   margin-bottom: 26px;
@@ -336,13 +337,14 @@ body {
   text-align: center;
 }
 .m-num {
-  font-family: 'DM Serif Display', serif;
-  font-size: 42px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 64px;
+  letter-spacing: 0.02em;
   color: var(--frambuesa);
   line-height: 1;
 }
 .m-lbl {
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: .08em;
   text-transform: uppercase;
   color: var(--muted);
@@ -354,8 +356,9 @@ body {
   gap: 10px;
 }
 .m-opt {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
+  font-family: 'Rubik', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
   letter-spacing: .08em;
   text-transform: uppercase;
   padding: 12px 18px;
@@ -435,18 +438,19 @@ body {
 .top-left-panel {
   top: 24px;
   left: 24px;
-  width: 220px;
+  width: 235px;
 }
 
 .top-right-panel {
   top: 24px;
   right: 24px;
-  width: 280px;
+  width: 290px;
 }
 
 .panel-title {
-  font-family: 'DM Serif Display', serif;
-  font-size: 18px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 25px;
+  letter-spacing: 0.05em;
   color: var(--frambuesa);
   border-bottom: 1px solid rgba(140, 32, 65, 0.1);
   padding-bottom: 4px;
@@ -454,7 +458,7 @@ body {
 }
 
 .panel-lbl {
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: .12em;
   text-transform: uppercase;
   color: var(--muted);
@@ -465,12 +469,24 @@ body {
 }
 
 .panel-row {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--dark);
+  line-height: 1.5;
 }
 
 .panel-row strong {
   color: var(--frambuesa);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  letter-spacing: 0.05em;
+  vertical-align: middle;
+}
+
+.stability-row strong {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  letter-spacing: 0.05em;
+  vertical-align: middle;
 }
 
 .stability-row {
@@ -494,13 +510,127 @@ body {
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
-  font-size: 10px;
+  font-size: 12px;
   color: var(--muted);
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
-  padding: 6px 16px;
+  padding: 8px 18px;
   border-radius: 20px;
   border: 1px solid rgba(140, 32, 65, 0.1);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Botón directo para reiniciar en la esquina inferior derecha */
+.btn-reiniciar-directo {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  z-index: 100;
+  font-family: 'Rubik', sans-serif;
+  font-weight: 700;
+  font-size: 10.5px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 8px 18px;
+  border-radius: 4px;
+  border: 1px solid rgba(140, 32, 65, 0.18);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--frambuesa);
+  cursor: pointer;
+  transition: all .2s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 4px 15px rgba(26, 17, 16, 0.08);
+}
+
+.btn-reiniciar-directo:hover {
+  background: var(--frambuesa);
+  color: var(--white);
+  border-color: var(--frambuesa);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(140, 32, 65, 0.15);
+}
+
+.btn-reiniciar-directo:active {
+  transform: translateY(0);
+}
+
+/* ================================= */
+/* AJUSTES PARA PANTALLAS GRANDES (TV/4K) */
+/* ================================= */
+@media (min-width: 2500px) {
+  /* Escalar paneles y tipografías en televisores */
+  .top-left-panel {
+    top: 40px;
+    left: 40px;
+    width: 350px;
+    padding: 22px 28px;
+    gap: 12px;
+  }
+  
+  .top-right-panel {
+    top: 40px;
+    right: 40px;
+    width: 440px;
+    padding: 22px 28px;
+    gap: 12px;
+  }
+
+  .panel-title {
+    font-size: 36px;
+    padding-bottom: 6px;
+  }
+
+  .panel-lbl {
+    font-size: 15px;
+    padding-bottom: 6px;
+  }
+
+  .panel-row {
+    font-size: 18px;
+  }
+
+  .panel-row strong, .stability-row strong {
+    font-size: 26px;
+  }
+
+  .cond-badge {
+    font-size: 16px;
+    padding: 6px 16px;
+  }
+
+  .cond-desc {
+    font-size: 19px;
+  }
+
+  .mini-bar {
+    height: 10px;
+  }
+
+  .canvas-instruction {
+    bottom: 40px;
+    font-size: 18px;
+    padding: 12px 28px;
+  }
+
+  .btn-reiniciar-directo {
+    bottom: 40px;
+    right: 40px;
+    font-size: 18px;
+    padding: 14px 30px;
+    border-radius: 6px;
+  }
+
+  /* Modal de colapso a gran escala */
+  .modal-box {
+    max-width: 600px;
+    padding: 50px 60px;
+  }
+  .modal-ey { font-size: 18px; }
+  .modal-tit { font-size: 60px; }
+  .modal-desc { font-size: 22px; }
+  .m-num { font-size: 90px; }
+  .m-lbl { font-size: 18px; }
+  .m-opt { font-size: 20px; padding: 16px 24px; }
 }
