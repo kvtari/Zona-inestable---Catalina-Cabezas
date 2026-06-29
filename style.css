@@ -1076,10 +1076,14 @@ body.no-scroll {
 
 .loading-subtitle {
     font-family: 'Rubik', sans-serif;
-    font-size: 13px;
+    font-size: 12px;
+    font-style: italic;
     color: #6B1831;
-    opacity: 0.7;
+    opacity: 0.55;
     letter-spacing: 0.05em;
+    line-height: 1.6;
+    text-align: center;
+    margin-top: 10px;
 }
 
 @keyframes pulseText {
@@ -1100,4 +1104,34 @@ body.no-scroll {
     html {
         font-size: 23px; /* Escala proporcional para televisores de gran formato o 4K */
     }
+}
+
+/* ================================================= */
+/* OPTIMIZACIONES DE RENDIMIENTO Y REDUCCIÓN DE PARPADEO */
+/* ================================================= */
+.scroll-section,
+.bloque-imagen img,
+.tarjeta-carrusel img,
+.item-3d,
+.item-3d canvas,
+#contenedor-torre-3d canvas {
+    /* Forzar creación de capa de composición en la GPU (Hardware Acceleration) */
+    transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    perspective: 1000px;
+    -webkit-perspective: 1000px;
+    
+    /* Prevenir parpadeos WebKit al renderizar transformaciones tridimensionales */
+    -webkit-font-smoothing: antialiased;
+    
+    /* Declarar intenciones de animación para evitar renderizados y repintados repentinos */
+    will-change: transform;
+}
+
+/* Evitar parpadeos en los GIFs al cambiar de visibilidad en transiciones */
+.bloque-imagen img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: auto;
 }
